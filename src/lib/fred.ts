@@ -85,3 +85,56 @@ export async function getReleaseDates(
   );
   return data.release_dates.map((r) => r.date);
 }
+
+// Descriptive details for a series (like the "Notes" box on a FRED series page).
+export type SeriesInfo = {
+  id: string;
+  title: string;
+  units: string;
+  frequency: string;
+  seasonalAdjustment: string;
+  notes: string;
+  lastUpdated: string; // e.g. "2026-07-30 10:09:19-05"
+  release: { name: string; link?: string } | null;
+  sources: { name: string; link?: string }[];
+};
+
+export async function getSeriesInfo(seriesId: string): Promise<SeriesInfo> {
+  const [seriesData, releaseData] = await Promise.all([
+    fredRequest<{
+      seriess: {
+        id: string;
+        title: string;
+        units: string;
+        frequency: string;
+        seasonal_adjustment: string;
+        notes?: string;
+        last_updated: string;
+      }[];
+    }>("series", { series_id: seriesId }),
+    fredRequest<{ releases: { id: number; name: string; link?: string }[] }>("series/release", {
+      series_id: seriesId,
+    }),
+  ]);
+  const s = seriesData.seriess[0];
+  const release = releaseData.releases[0] ?? null;
+  const sources = release
+    ? (
+        await fredRequest<{ sources: { name: string; link?: string }[] }>("release/sources", {
+          release_id: String(release.id),
+        })
+      ).sources
+    : [];
+
+  return {
+    id: s.id,
+    title: s.title,
+    units: s.units,
+    frequency: s.frequency,
+    seasonalAdjustment: s.seasonal_adjustment,
+    notes: (s.notes ?? "").trim(),
+    lastUpdated: s.last_updated,
+    release: release ? { name: release.name, link: release.link } : null,
+    sources: sources.map((src) => ({ name: src.name, link: src.link })),
+  };
+}

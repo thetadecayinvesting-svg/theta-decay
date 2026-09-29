@@ -24,7 +24,7 @@ export default function DashboardView({ charts }: { charts: ChartResult[] }) {
   return (
     <div className="space-y-6">
       <RangeToggle ranges={DASHBOARD_RANGES} value={range} onChange={setPicked} />
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid items-start gap-6 lg:grid-cols-2">
         {charts.map((c) => (
           <ChartCard
             key={c.key}

@@ -139,3 +139,18 @@ export const CHARTS: ChartConfig[] = [
     lines: [{ key: "margin", finra: "marginDebt", label: "Margin debt" }],
   },
 ];
+
+// The "Details" panel under a chart line (source, release, units, notes…),
+// modelled on the Notes box of a FRED series page.
+export type SeriesDetails = {
+  seriesId: string;
+  title: string;
+  sources: { name: string; link?: string }[];
+  release: { name: string; link?: string } | null;
+  units: string; // what the chart shows, including any transformation
+  frequency: string;
+  notes: string;
+  citation: string;
+  url: string; // where to see the original series
+  lastUpdated?: string;
+};

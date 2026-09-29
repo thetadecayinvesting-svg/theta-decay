@@ -1,6 +1,6 @@
-import { CHARTS, type ChartConfig } from "./charts";
+import { CHARTS, type ChartConfig, type LineConfig, type SeriesDetails } from "./charts";
 import { getMarginDebt } from "./finra";
-import { getSeries, hasFredKey } from "./fred";
+import { getSeries, getSeriesInfo, hasFredKey } from "./fred";
 
 export * from "./charts";
 
@@ -9,8 +9,66 @@ export type Row = { date: string; values: Record<string, number> };
 
 export type ChartResult = ChartConfig & {
   rows: Row[];
+  details: (SeriesDetails | null)[]; // one per line; null if it couldn't load
   error?: string;
 };
+
+// "September 29, 2026": the retrieval date used in citations.
+function citationDate() {
+  return new Date().toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "America/New_York",
+  });
+}
+
+const FINRA_MARGIN_URL =
+  "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics";
+
+// Details for one chart line, from FRED's series information (or FINRA's page).
+async function lineDetails(line: LineConfig): Promise<SeriesDetails | null> {
+  if (line.finra) {
+    return {
+      seriesId: "FINRA margin statistics",
+      title: "Debit Balances in Customers' Securities Margin Accounts",
+      sources: [{ name: "FINRA", link: "https://www.finra.org/" }],
+      release: { name: "Margin Statistics", link: FINRA_MARGIN_URL },
+      units: "Millions of Dollars (shown here in trillions), Not Seasonally Adjusted",
+      frequency: "Monthly",
+      notes:
+        "FINRA collects these figures from its member firms under FINRA Rule 4521(d) and generally publishes each month's data in the third week of the following month.\n\nThrough January 2010, the NYSE and FINRA collected similar margin data separately. Month-to-month changes can partly reflect firms changing how they calculate the balances they report.",
+      citation: `FINRA, Margin Statistics: Debit Balances in Customers' Securities Margin Accounts, retrieved from ${FINRA_MARGIN_URL}, ${citationDate()}.`,
+      url: FINRA_MARGIN_URL,
+    };
+  }
+  try {
+    const info = await getSeriesInfo(line.fredId!);
+    const units =
+      line.units === "pc1"
+        ? `Percent Change from Year Ago (calculated by FRED from ${info.units}, ${info.seasonalAdjustment})`
+        : `${info.units}, ${info.seasonalAdjustment}`;
+    const frequency =
+      line.frequency === "w" ? `Weekly average of ${info.frequency.toLowerCase()} data` : info.frequency;
+    const sourceNames = info.sources.map((src) => src.name).join("; ") || "FRED";
+    const url = `https://fred.stlouisfed.org/series/${info.id}`;
+    return {
+      seriesId: info.id,
+      title: info.title,
+      sources: info.sources,
+      release: info.release,
+      units,
+      frequency,
+      notes: info.notes,
+      citation: `${sourceNames}, ${info.title} [${info.id}], retrieved from FRED, Federal Reserve Bank of St. Louis; ${url}, ${citationDate()}.`,
+      url,
+      lastUpdated: info.lastUpdated,
+    };
+  } catch (err) {
+    console.error(`Couldn't load details for ${line.fredId}:`, err);
+    return null;
+  }
+}
 
 // Join each line's observations into one row per date.
 function mergeLines(lines: { key: string; points: { date: string; value: number }[] }[]): Row[] {
@@ -36,11 +94,16 @@ export async function getDashboardData(section: ChartConfig["section"]): Promise
 }> {
   const pageCharts = CHARTS.filter((c) => c.section === section);
   if (!hasFredKey()) {
-    return { charts: pageCharts.map((c) => ({ ...c, rows: [] })), missingKey: true };
+    return {
+      charts: pageCharts.map((c) => ({ ...c, rows: [], details: c.lines.map(() => null) })),
+      missingKey: true,
+    };
   }
 
   const charts = await Promise.all(
     pageCharts.map(async (chart): Promise<ChartResult> => {
+      // Details load alongside the data; a failure there never hides the chart.
+      const detailsPromise = Promise.all(chart.lines.map(lineDetails));
       try {
         const lines = await Promise.all(
           chart.lines.map(async (line) => ({
@@ -54,9 +117,14 @@ export async function getDashboardData(section: ChartConfig["section"]): Promise
                 }),
           })),
         );
-        return { ...chart, rows: mergeLines(lines) };
+        return { ...chart, rows: mergeLines(lines), details: await detailsPromise };
       } catch (err) {
-        return { ...chart, rows: [], error: err instanceof Error ? err.message : String(err) };
+        return {
+          ...chart,
+          rows: [],
+          details: await detailsPromise,
+          error: err instanceof Error ? err.message : String(err),
+        };
       }
     }),
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { formatPeriod, formatTick, lineColor, pickTicks, type Period } from "@/lib/chartFormat";
 import type { ChartResult, LineConfig, Row } from "@/lib/series";
+import SeriesDetailsPanel from "./SeriesDetailsPanel";
 
 // Most recent value for a line, and its change from the reading before.
 function latestReading(rows: Row[], key: string) {
@@ -96,7 +97,8 @@ export default function ChartCard({
   rows: Row[]; // already trimmed to the selected range
   spanYears: number;
 }) {
-  const [showTable, setShowTable] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const detailsId = useId();
   const multi = chart.lines.length > 1;
   const readings = chart.lines.map((line) => latestReading(chart.rows, line.key));
 
@@ -160,35 +162,6 @@ export default function ChartCard({
       ) : rows.length === 0 ? (
         <div className="mt-5 grid h-60 place-items-center rounded-lg bg-surface-hover text-sm text-muted">
           No data yet
-        </div>
-      ) : showTable ? (
-        <div className="mt-5 h-60 overflow-y-auto">
-          <table className="w-full font-table text-sm">
-            <thead className="sticky top-0 bg-surface text-left text-xs text-muted">
-              <tr>
-                <th className="py-2 font-medium">Date</th>
-                {chart.lines.map((line) => (
-                  <th key={line.key} className="py-2 text-right font-medium">
-                    {multi ? line.label : "Value"}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="num">
-              {[...rows].reverse().map((row) => (
-                <tr key={row.date} className="border-t border-border">
-                  <td className="py-2 text-muted">{formatPeriod(row.date, chart.period)}</td>
-                  {chart.lines.map((line) => (
-                    <td key={line.key} className="py-2 text-right">
-                      {row.values[line.key] === undefined
-                        ? "—"
-                        : `${chart.prefix ?? ""}${row.values[line.key].toFixed(2)}${chart.unit}`}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       ) : (
         <div className="mt-5 h-60">
@@ -254,13 +227,25 @@ export default function ChartCard({
             {chart.note && <> · {chart.note}</>}
           </span>
           <button
-            onClick={() => setShowTable((v) => !v)}
-            className="shrink-0 font-medium text-accent hover:text-accent-hover"
+            onClick={() => setShowDetails((v) => !v)}
+            aria-expanded={showDetails}
+            aria-controls={detailsId}
+            className="inline-flex shrink-0 items-center gap-1 font-medium text-accent hover:text-accent-hover"
           >
-            {showTable ? "Show chart" : "Show table"}
+            Details
+            <svg
+              aria-hidden
+              viewBox="0 0 20 20"
+              className={`h-3.5 w-3.5 transition-transform ${showDetails ? "rotate-180" : ""}`}
+              fill="none"
+            >
+              <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
         </div>
       )}
+
+      {showDetails && <SeriesDetailsPanel id={detailsId} lines={chart.lines} details={chart.details} />}
     </section>
   );
 }
