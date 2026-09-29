@@ -35,8 +35,8 @@ export const PAGES: SitePage[] = [
   {
     href: "/newsletter",
     label: "Newsletter",
-    description: "Weekly briefing (coming soon)",
-    keywords: ["newsletter", "email", "subscribe", "weekly"],
+    description: "Out of the Money Weekly: free weekly briefing",
+    keywords: ["newsletter", "out of the money weekly", "out of the money", "otm", "email", "subscribe", "weekly"],
   },
   {
     href: "/about",

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState, useId } from "react";
 import { subscribe, type SubscribeState } from "@/app/actions/subscribe";
+import { NEWSLETTER_NAME } from "@/lib/site";
 
 const initialState: SubscribeState = { status: "idle", message: "" };
 
@@ -70,7 +71,7 @@ export default function NewsletterSignup({
       <section className="rounded-lg border border-border bg-surface p-6">
         <div className="gap-8 md:flex md:items-center">
           <div className="md:w-2/5">
-            <h2 className="font-semibold tracking-tight">Get the Week Ahead in your inbox</h2>
+            <h2 className="font-semibold tracking-tight">Get {NEWSLETTER_NAME} in your inbox</h2>
             <p className="mt-1 text-sm text-muted">
               The dates and data that move markets, in plain English.{" "}
               <Link href="/newsletter" className="text-accent hover:text-accent-hover">
@@ -87,7 +88,7 @@ export default function NewsletterSignup({
   return (
     <section className="rounded-lg border border-border border-l-4 border-l-accent bg-surface p-6 sm:p-8">
       <p className="text-xs font-medium uppercase tracking-wider text-accent">Free weekly briefing</p>
-      <h2 className="mt-3 text-xl font-semibold tracking-tight">The Theta Decay Week Ahead</h2>
+      <h2 className="mt-3 text-xl font-semibold tracking-tight">{NEWSLETTER_NAME}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted">
         Every week: the economic calendar for the days ahead, what the latest inflation,
         jobs and rates data mean, and any warning signs from the market risk gauges.

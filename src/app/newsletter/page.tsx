@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import { hasBeehiiv } from "@/lib/beehiiv";
-import { pageMetadata } from "@/lib/site";
+import { NEWSLETTER_NAME, pageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = pageMetadata({
   title: "Newsletter",
   description:
-    "The Theta Decay Week Ahead: a free, plain-English weekly briefing on the economic data and events that move markets.",
+    `${NEWSLETTER_NAME}: a free, plain-English weekly briefing on the economic data and events that move markets.`,
   path: "/newsletter",
 });
 
@@ -44,7 +44,7 @@ export default function NewsletterPage() {
         <section className="rounded-lg border border-border border-l-4 border-l-accent bg-surface p-6 sm:p-8">
           <p className="text-xs font-medium uppercase tracking-wider text-accent">Coming soon</p>
           <h2 className="mt-3 text-xl font-semibold tracking-tight">
-            The Theta Decay Week Ahead is on its way
+            {NEWSLETTER_NAME} is on its way
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             In the meantime, the{" "}
