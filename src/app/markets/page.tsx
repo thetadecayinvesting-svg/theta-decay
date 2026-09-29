@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/site";
 import KeyNotice from "@/components/KeyNotice";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import LiveMiniCharts from "@/components/LiveMiniCharts";
 import PerformanceChart from "@/components/markets/PerformanceChart";
 import SpFedChart from "@/components/markets/SpFedChart";
 import StatCards from "@/components/markets/StatCards";
 import { ASSETS } from "@/lib/assets";
 import { formatPeriod } from "@/lib/chartFormat";
+import { hasBeehiiv } from "@/lib/beehiiv";
 import { getMarketData } from "@/lib/markets";
 
 export const metadata: Metadata = pageMetadata({
@@ -82,6 +84,8 @@ export default async function MarketsPage() {
         <PerformanceChart assets={ASSETS} series={assets} />
         <SpFedChart sp={sp} fed={fedFunds.points} />
       </section>
+
+      {hasBeehiiv() && <NewsletterSignup source="markets" variant="inline" />}
     </div>
   );
 }

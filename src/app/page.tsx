@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import CalendarView from "@/components/CalendarView";
 import KeyNotice from "@/components/KeyNotice";
+import NewsletterSignup from "@/components/NewsletterSignup";
+import { hasBeehiiv } from "@/lib/beehiiv";
 import { getCalendar, todayET } from "@/lib/calendar";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -57,6 +59,8 @@ export default async function Home() {
       )}
 
       <CalendarView events={events} today={todayET()} />
+
+      {hasBeehiiv() && <NewsletterSignup source="calendar" variant="inline" />}
     </div>
   );
 }
