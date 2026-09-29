@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, Inter, Sora } from "next/font/google";
 import SettingsProvider from "@/components/SettingsProvider";
@@ -62,6 +63,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           </div>
         </footer>
         </SettingsProvider>
+        {/* Vercel Web Analytics: visitors and page views (no cookies) */}
+        <Analytics />
       </body>
     </html>
   );
