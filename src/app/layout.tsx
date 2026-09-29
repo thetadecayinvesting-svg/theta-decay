@@ -1,6 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, Inter, Lora } from "next/font/google";
+import { IBM_Plex_Sans, Inter, Sora } from "next/font/google";
 import SettingsProvider from "@/components/SettingsProvider";
 import SiteHeader from "@/components/SiteHeader";
 import TickerTape from "@/components/TickerTape";
@@ -16,11 +16,10 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-// Headings: Lora Bold, matching the logo
-const lora = Lora({
-  variable: "--font-lora",
+// Headlines
+const sora = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
-  weight: "700",
 });
 
 // Tables
@@ -62,7 +61,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${lora.variable} ${plexSans.variable} h-full antialiased`}
+      className={`${inter.variable} ${sora.variable} ${plexSans.variable} h-full antialiased`}
       suppressHydrationWarning // the theme script below may set data-theme before React loads
     >
       <head>
