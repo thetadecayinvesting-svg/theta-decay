@@ -5,7 +5,7 @@ import type { CalendarEvent, EventType } from "@/lib/events";
 import { NEWSLETTER_NAME, SITE_NAME, SITE_URL, jsonLdScript, pageMetadata } from "@/lib/site";
 
 const MISSION =
-  "Our mission is to help investors make better-informed decisions. We make the economic data and central bank meetings that move markets clear and accessible to every retail investor, and we give experienced investors a professional-grade platform to analyze market conditions.";
+  "We're on a mission to make retail investors more informed by providing them with a platform where important economic data and meeting and report dates are more accessible.";
 
 export const metadata: Metadata = pageMetadata({
   title: "About Us: Our Mission",
