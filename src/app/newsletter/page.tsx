@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import Link from "next/link";
 
-export const metadata: Metadata = {
-  title: "Newsletter — Theta Decay Investing",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Newsletter",
+  description:
+    "A plain-English weekly briefing on the economic data and events that move markets. Coming soon.",
+  path: "/newsletter",
+});
 
 // Placeholder until an email service (e.g. Buttondown, ConvertKit, Beehiiv) is chosen.
 export default function NewsletterPage() {

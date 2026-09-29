@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import DashboardView from "@/components/DashboardView";
 import KeyNotice from "@/components/KeyNotice";
 import { getDashboardData } from "@/lib/series";
 
-export const metadata: Metadata = {
-  title: "Economic Indicators — Theta Decay Investing",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Economic Indicators",
+  description:
+    "Live charts of CPI inflation, unemployment, the fed funds rate, 10-year Treasury yield and real GDP growth, updated from FRED.",
+  path: "/dashboard",
+});
 
 // Refresh FRED data at most once an hour.
 export const revalidate = 3600;

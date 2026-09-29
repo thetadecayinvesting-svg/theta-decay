@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import KeyNotice from "@/components/KeyNotice";
 import LiveMiniCharts from "@/components/LiveMiniCharts";
 import PerformanceChart from "@/components/markets/PerformanceChart";
@@ -8,9 +9,12 @@ import { ASSETS } from "@/lib/assets";
 import { formatPeriod } from "@/lib/chartFormat";
 import { getMarketData } from "@/lib/markets";
 
-export const metadata: Metadata = {
-  title: "Markets — Theta Decay Investing",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Markets",
+  description:
+    "Live Nasdaq, S&P 500, Dow Jones and Bitcoin prices, plus long-term performance and S&P 500 vs. fed funds rate charts.",
+  path: "/markets",
+});
 
 // Refresh FRED data at most once an hour.
 export const revalidate = 3600;

@@ -7,6 +7,7 @@ import TickerTape from "@/components/TickerTape";
 import { getCalendar } from "@/lib/calendar";
 import { buildSearchIndex } from "@/lib/searchIndex";
 import { THEME_BOOT_SCRIPT } from "@/lib/settings";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 // Main UI
@@ -29,9 +30,27 @@ const plexSans = IBM_Plex_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Theta Decay Investing — Economic Calendar, Indicators & Markets",
-  description:
-    "Upcoming FOMC, CPI, jobs, GDP and PCE release dates, plus live macro charts from FRED.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    template: `%s | ${SITE_NAME}`, // e.g. "Markets | Theta Decay Investing"
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    url: "/",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

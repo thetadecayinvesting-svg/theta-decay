@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import DashboardView from "@/components/DashboardView";
 import KeyNotice from "@/components/KeyNotice";
 import { getDashboardData } from "@/lib/series";
 
-export const metadata: Metadata = {
-  title: "Market Risk — Theta Decay Investing",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Market Risk",
+  description:
+    "Track market stress: VIX volatility, high-yield and investment-grade credit spreads, the Baa corporate spread and FINRA margin debt.",
+  path: "/market-risk",
+});
 
 // Refresh FRED data at most once an hour (FINRA margin debt: once a day).
 export const revalidate = 3600;

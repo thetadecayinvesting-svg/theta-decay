@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About — Theta Decay Investing",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "About",
+  description:
+    "What Theta Decay Investing covers and where its data comes from: FRED, the Federal Reserve, FINRA, Coinbase and TradingView.",
+  path: "/about",
+});
 
 const SOURCES = [
   {
