@@ -36,6 +36,8 @@ export default function NewsletterSignup({
           required
           autoComplete="email"
           placeholder="you@example.com"
+          defaultValue={state.email ?? ""}
+          key={state.email ?? "empty"} // refill the box after an error
           aria-invalid={state.status === "error"}
           aria-describedby={`${id}-message`}
           className="h-11 min-w-0 flex-1 rounded-lg border border-border bg-bg px-4 text-sm text-primary outline-none placeholder:text-muted focus:border-accent focus-visible:outline-none"
@@ -53,7 +55,7 @@ export default function NewsletterSignup({
       </div>
       <p id={`${id}-message`} aria-live="polite" className="min-h-5 text-xs">
         {state.status === "error" ? (
-          <span className="text-primary">{state.message}</span>
+          <span className="font-medium text-primary">⚠ {state.message}</span>
         ) : (
           <span className="text-muted">
             One email a week. Free, unsubscribe anytime, and we never sell your email.

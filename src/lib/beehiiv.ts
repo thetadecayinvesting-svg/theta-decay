@@ -4,6 +4,12 @@
 
 import { SITE_URL } from "./site";
 
+export class BeehiivError extends Error {
+  constructor(public status: number) {
+    super(`beehiiv ${status}`);
+  }
+}
+
 export function hasBeehiiv() {
   return Boolean(
     process.env.BEEHIIV_API_KEY?.trim() && process.env.BEEHIIV_PUBLICATION_ID?.trim(),
@@ -35,6 +41,6 @@ export async function addSubscriber(email: string, source: string) {
   if (!res.ok) {
     // Log details for us, but never expose the API key or raw response to visitors.
     console.error(`beehiiv subscribe failed (${res.status}):`, await res.text().catch(() => ""));
-    throw new Error(`beehiiv ${res.status}`);
+    throw new BeehiivError(res.status);
   }
 }
