@@ -101,7 +101,7 @@ export default function ChartCard({
   const readings = chart.lines.map((line) => latestReading(chart.rows, line.key));
 
   return (
-    <section className="flex flex-col rounded-lg border border-border bg-surface p-6">
+    <section id={`chart-${chart.key}`} className="flex flex-col rounded-lg border border-border bg-surface p-6">
       <header className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h3 className="font-medium">{chart.title}</h3>

@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import ChartFrame from "./ChartFrame";
 import RangeToggle, { RANGES, type Range } from "../RangeToggle";
+import { useSettings } from "../SettingsProvider";
 import { formatPeriod, formatTick, lineColor, pickTicks, yearsAgo } from "@/lib/chartFormat";
 import type { Point } from "@/lib/fred";
 
@@ -55,7 +56,10 @@ function PanelTooltip({
 const axisTick = { fill: "var(--chart-axis)", fontSize: 11 };
 
 export default function SpFedChart({ sp, fed }: { sp: Point[]; fed: Point[] }) {
-  const [range, setRange] = useState<Range>(RANGES[1]);
+  const { settings } = useSettings();
+  // Until the visitor picks a range here, follow their default from Settings.
+  const [picked, setPicked] = useState<Range | null>(null);
+  const range = picked ?? RANGES.find((r) => r.label === settings.defaultRange) ?? RANGES[2];
   const cutoff = yearsAgo(range.years);
   const rows = useMemo(() => buildRows(sp, fed, cutoff), [sp, fed, cutoff]);
   const spanYears = range.years || 10;
@@ -65,9 +69,10 @@ export default function SpFedChart({ sp, fed }: { sp: Point[]; fed: Point[] }) {
 
   return (
     <ChartFrame
+      id="chart-sp-fed"
       title="S&P 500 vs. Fed Funds Rate"
       description="Daily S&P 500 close (top) and the monthly average fed funds rate (bottom), on the same timeline"
-      controls={<RangeToggle value={range} onChange={setRange} />}
+      controls={<RangeToggle value={range} onChange={setPicked} />}
       insight="Stocks often stumble while the Fed raises rates quickly, as in 2022, and tend to recover once hikes pause, because higher rates make borrowing costlier and safe bonds more attractive."
       asOf={
         latestSp && latestFed

@@ -14,6 +14,7 @@ import {
 import ChartFrame from "./ChartFrame";
 import { PctChange } from "./StatCards";
 import RangeToggle, { RANGES, type Range } from "../RangeToggle";
+import { useSettings } from "../SettingsProvider";
 import type { Asset } from "@/lib/assets";
 import { formatPeriod, formatTick, lineColor, pickTicks, yearsAgo } from "@/lib/chartFormat";
 import type { AssetSeries } from "@/lib/markets";
@@ -100,7 +101,10 @@ export default function PerformanceChart({
   assets: Asset[];
   series: AssetSeries[];
 }) {
-  const [range, setRange] = useState<Range>(RANGES[0]);
+  const { settings } = useSettings();
+  // Until the visitor picks a range here, follow their default from Settings.
+  const [picked, setPicked] = useState<Range | null>(null);
+  const range = picked ?? RANGES.find((r) => r.label === settings.defaultRange) ?? RANGES[2];
   const [log, setLog] = useState(false);
   const cutoff = yearsAgo(range.years);
   const { rows, start } = useMemo(() => buildRows(assets, series, cutoff), [assets, series, cutoff]);
@@ -115,6 +119,7 @@ export default function PerformanceChart({
 
   return (
     <ChartFrame
+      id="chart-performance"
       title="Performance Comparison"
       description={
         start
@@ -134,7 +139,7 @@ export default function PerformanceChart({
           >
             Log scale
           </button>
-          <RangeToggle value={range} onChange={setRange} />
+          <RangeToggle value={range} onChange={setPicked} />
         </div>
       }
       insight="Starting every asset at 0% on the same day shows which one actually grew your money the most over the period, while the size of each line's swings shows how bumpy the ride was."

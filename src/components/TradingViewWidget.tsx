@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useSettings } from "./SettingsProvider";
 
 // Embeds a free TradingView widget (https://www.tradingview.com/widget-docs/).
 // The script is only injected once the widget is near the screen and the
@@ -17,17 +18,22 @@ export default function TradingViewWidget({
   height: number;
   attribution: { href: string; label: string };
 }) {
-  const container = useRef<HTMLDivElement>(null);
+  // TradingView rewrites whatever it's given, so it gets its own box (host)
+  // that React leaves empty; we rebuild the widget inside it on every load.
+  const host = useRef<HTMLDivElement>(null);
   const configJson = JSON.stringify(config);
+  // Re-draw with the new colors when the visitor switches theme.
+  const { settings, loaded } = useSettings();
+  const theme = settings.theme;
 
   useEffect(() => {
-    const el = container.current;
-    if (!el) return;
+    const el = host.current;
+    if (!el || !loaded) return; // wait for saved settings so we load once, in the right colors
     let cancelled = false;
     let idleHandle: number | undefined;
 
     const inject = () => {
-      if (cancelled || el.querySelector("script")) return;
+      if (cancelled || el.childElementCount > 0) return;
       // TradingView can't read CSS variables, so swap "var(--token)" values
       // for the actual colors from the theme file (globals.css).
       const root = getComputedStyle(document.documentElement);
@@ -40,7 +46,14 @@ export default function TradingViewWidget({
       s.async = true;
       s.type = "text/javascript";
       s.innerHTML = resolved;
-      el.appendChild(s);
+      const box = document.createElement("div");
+      box.className = "tradingview-widget-container";
+      box.style.minHeight = `${height}px`;
+      const widget = document.createElement("div");
+      widget.className = "tradingview-widget-container__widget";
+
+      box.append(widget, s);
+      el.replaceChildren(box);
     };
 
     const whenIdle = () => {
@@ -66,23 +79,13 @@ export default function TradingViewWidget({
       cancelled = true;
       observer.disconnect();
       if (idleHandle !== undefined) window.cancelIdleCallback?.(idleHandle);
-      // Clear the widget so a re-render starts fresh.
-      el.querySelectorAll("script, iframe").forEach((node) => node.remove());
-      const widget = el.querySelector(".tradingview-widget-container__widget");
-      if (widget) widget.innerHTML = "";
+      el.replaceChildren(); // clear the widget so the next load starts fresh
     };
-  }, [script, configJson]);
+  }, [script, configJson, theme, loaded, height]);
 
   return (
-    <div
-      ref={container}
-      className="tradingview-widget-container"
-      style={{ minHeight: height }}
-    >
-      <div
-        className="tradingview-widget-container__widget"
-        style={{ height }}
-      />
+    <div>
+      <div ref={host} style={{ minHeight: height }} />
       {/* Required TradingView attribution — do not remove. */}
       <div className="tradingview-widget-copyright px-1 pt-1 text-[11px] text-muted">
         <a

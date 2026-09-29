@@ -54,7 +54,7 @@ export default function StatCards({
   series: AssetSeries[];
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div id="chart-stats" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {assets.map((asset) => {
         const data = series.find((s) => s.key === asset.key);
         const stats = data ? assetStats(data.points) : null;

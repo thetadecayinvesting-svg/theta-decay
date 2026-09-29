@@ -7,7 +7,7 @@ export type CalendarEvent = {
   type: EventType;
   title: string;
   detail: string;
-  time: string; // Eastern Time
+  timeET: string; // official release time, 24-hour Eastern Time, e.g. "08:30"
 };
 
 // highImpact events get the violet "High impact" badge on the calendar.

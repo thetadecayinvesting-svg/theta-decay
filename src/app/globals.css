@@ -81,13 +81,83 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+/* In the base layer so individual elements (like the search box) can override it. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 /* TradingView widgets: let their transparent background show the page
    (a dark color-scheme on the frame makes browsers paint it white). */
 .tradingview-widget-container iframe {
   color-scheme: normal;
+}
+
+/* =====================================================================
+   ALTERNATE THEMES — picked in the Settings menu (saved per browser).
+   Each one overrides the tokens above; anything not listed is shared.
+   ===================================================================== */
+:root[data-theme="midnight-gold"] {
+  --bg: #0c0f17;
+  --surface: #151a26;
+  --border: #262c3c;
+  --surface-hover: #262c3c;
+  --text-primary: #ece8df;
+  --text-muted: #a39d8f;
+  --accent: #e3b34c;
+  --accent-hover: #f0c872;
+  --accent-soft: rgb(227 179 76 / 0.15);
+  --on-accent: #0c0f17;
+  --chart-1: #e3b34c; /* gold */
+  --chart-2: #60a5fa; /* blue */
+  --chart-3: #2dd4bf; /* teal */
+  --chart-4: #a78bfa; /* violet */
+  --chart-grid: #262c3c;
+  --chart-axis: #a39d8f;
+  --tv-line: #e3b34c;
+  --tv-area-top: rgba(227, 179, 76, 0.25);
+  --tv-area-bottom: rgba(227, 179, 76, 0);
+}
+
+:root[data-theme="terminal-teal"] {
+  --bg: #0a1213;
+  --surface: #111d1f;
+  --border: #1f3033;
+  --surface-hover: #1f3033;
+  --text-primary: #e3f2ef;
+  --text-muted: #8ea9a5;
+  --accent: #2dd4bf;
+  --accent-hover: #5eead4;
+  --accent-soft: rgb(45 212 191 / 0.15);
+  --on-accent: #0a1213;
+  --chart-1: #2dd4bf; /* teal */
+  --chart-2: #8b7cf6; /* violet */
+  --chart-3: #f5b84b; /* amber */
+  --chart-4: #60a5fa; /* blue */
+  --chart-grid: #1f3033;
+  --chart-axis: #8ea9a5;
+  --tv-line: #2dd4bf;
+  --tv-area-top: rgba(45, 212, 191, 0.25);
+  --tv-area-bottom: rgba(45, 212, 191, 0);
+}
+
+/* Charts reached from search get a brief highlight and clear the fixed header. */
+[id^="chart-"],
+[id^="event-"] {
+  scroll-margin-top: 6rem;
+}
+:target,
+.flash-target {
+  animation: target-flash 1.6s ease-out;
+}
+@keyframes target-flash {
+  0%,
+  40% {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+  }
 }

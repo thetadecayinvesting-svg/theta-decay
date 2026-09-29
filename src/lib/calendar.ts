@@ -73,8 +73,8 @@ function fomcEvents(): CalendarEvent[] {
     title: "FOMC Rate Decision",
     detail: `Two-day meeting ${formatShortRange(start, end)}${
       sep ? " · with Summary of Economic Projections" : ""
-    } · Press conference 2:30 PM`,
-    time: "2:00 PM ET",
+    } · Press conference follows the statement`,
+    timeET: "14:00",
   }));
 }
 
@@ -108,7 +108,7 @@ export async function getCalendar(): Promise<{
             type: release.type,
             title: release.title,
             detail: release.detail,
-            time: "8:30 AM ET",
+            timeET: "08:30",
           });
         }
       } else {

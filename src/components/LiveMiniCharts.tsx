@@ -4,7 +4,7 @@ import { ASSETS } from "@/lib/assets";
 // Four live TradingView mini charts: 2×2 on phones, a row of four on desktop.
 export default function LiveMiniCharts() {
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    <div id="chart-live" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {ASSETS.map((asset) => (
         <div key={asset.key} className="rounded-lg border border-border bg-surface p-3">
           <p className="mb-2 px-1 text-xs font-medium text-muted">{asset.tvLabel}</p>

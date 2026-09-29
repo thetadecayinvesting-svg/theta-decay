@@ -6,6 +6,9 @@ import {
   type CalendarEvent,
   type EventType,
 } from "@/lib/events";
+import { TIME_ZONES } from "@/lib/settings";
+import { formatReleaseTime } from "@/lib/timezone";
+import { useSettings } from "./SettingsProvider";
 
 const TYPES = Object.keys(EVENT_META) as EventType[];
 
@@ -59,6 +62,7 @@ export default function CalendarView({
   events: CalendarEvent[];
   today: string;
 }) {
+  const { settings } = useSettings();
   const [active, setActive] = useState<Set<EventType>>(new Set(TYPES));
 
   const toggle = (type: EventType) => {
@@ -85,6 +89,14 @@ export default function CalendarView({
 
   return (
     <div className="space-y-10">
+      <p className="-mt-6 text-sm text-muted">
+        Times shown in{" "}
+        <span className="text-primary">
+          {TIME_ZONES.find((z) => z.id === settings.timeZone)?.label ?? settings.timeZone}
+        </span>
+        . Change it in Settings (the gear icon, top right).
+      </p>
+
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="mr-1 text-xs font-medium uppercase tracking-wider text-muted">
@@ -143,7 +155,9 @@ export default function CalendarView({
                   <Tags type={event.type} />
                 </div>
                 <p className="mt-1.5 text-sm text-muted">{event.detail}</p>
-                <p className="num mt-1 text-sm text-muted">{event.time}</p>
+                <p className="num mt-1 text-sm text-muted">
+                  <ReleaseTime event={event} timeZone={settings.timeZone} />
+                </p>
               </div>
             ))}
           </div>
@@ -163,6 +177,7 @@ export default function CalendarView({
               return (
                 <li
                   key={`${event.date}-${event.type}`}
+                  id={`event-${event.date}-${event.type}`}
                   className={`flex items-center gap-5 border-l-4 px-5 py-4 transition-colors ${
                     highlighted
                       ? "border-l-accent bg-accent-soft"
@@ -185,7 +200,9 @@ export default function CalendarView({
                     <p className="mt-0.5 truncate text-sm text-muted">{event.detail}</p>
                   </div>
                   <div className="hidden shrink-0 text-right sm:block">
-                    <div className="num text-sm">{event.time}</div>
+                    <div className="num text-sm">
+                      <ReleaseTime event={event} timeZone={settings.timeZone} />
+                    </div>
                     <div className={`text-xs ${highlighted ? "text-accent-hover" : "text-muted"}`}>
                       {relative(days)}
                     </div>
@@ -201,5 +218,16 @@ export default function CalendarView({
         <p className="text-sm text-muted">No events match the selected filters.</p>
       )}
     </div>
+  );
+}
+
+// Release time in the visitor's chosen time zone.
+function ReleaseTime({ event, timeZone }: { event: CalendarEvent; timeZone: string }) {
+  const { time, dayShift } = formatReleaseTime(event.date, event.timeET, timeZone);
+  return (
+    <>
+      {time}
+      {dayShift && <span className="text-muted"> ({dayShift})</span>}
+    </>
   );
 }
