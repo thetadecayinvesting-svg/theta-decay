@@ -32,3 +32,10 @@ export function pageMetadata({
     twitter: { card: "summary_large_image", title: `${title} | ${SITE_NAME}`, description },
   };
 }
+
+// Structured data (JSON-LD) for a <script type="application/ld+json"> tag.
+// "<" is written as its escaped unicode form so the JSON can't close the tag early.
+const ESCAPED_LESS_THAN = String.fromCharCode(92) + "u003c";
+export function jsonLdScript(data: unknown) {
+  return JSON.stringify(data).replace(/</g, ESCAPED_LESS_THAN);
+}

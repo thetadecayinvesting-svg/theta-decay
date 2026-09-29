@@ -42,6 +42,6 @@ export const PAGES: SitePage[] = [
     href: "/about",
     label: "About",
     description: "What's here and where the data comes from",
-    keywords: ["about", "sources", "data sources", "disclaimer", "contact"],
+    keywords: ["about", "mission", "faq", "questions", "next fomc meeting", "next jobs report", "sources", "data sources", "disclaimer", "contact"],
   },
 ];
