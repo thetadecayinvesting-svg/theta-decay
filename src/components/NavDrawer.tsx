@@ -67,7 +67,7 @@ export default function NavDrawer() {
         }`}
       >
         <div className="flex h-16 items-center justify-between border-b border-border px-5">
-          <span className="font-display font-semibold tracking-tight">Menu</span>
+          <span className="font-display font-bold tracking-tight">Menu</span>
           <button
             ref={closeButton}
             onClick={() => setOpen(false)}

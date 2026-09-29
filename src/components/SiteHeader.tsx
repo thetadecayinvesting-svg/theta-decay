@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import NavDrawer from "./NavDrawer";
@@ -36,13 +37,17 @@ export default function SiteHeader({ searchItems }: { searchItems: SearchItem[] 
         </div>
 
         <div className="flex min-w-0 items-center justify-center gap-6">
-          <Link href="/" className="flex shrink-0 items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-sm font-semibold text-on-accent">
-              Θ
-            </span>
-            <span className="whitespace-nowrap font-display text-[15px] font-semibold tracking-tight sm:text-base">
-              Theta Decay Investing
-            </span>
+          <Link href="/" aria-label="Theta Decay Investing: home" className="flex shrink-0 items-center">
+            {/* Logo from the logo kit (public/logo.svg), 343×100 */}
+            <Image
+              src="/logo.svg"
+              alt="Theta Decay Investing"
+              width={165}
+              height={48}
+              priority
+              unoptimized
+              className="h-12 w-auto"
+            />
           </Link>
           <div className="hidden w-80 md:block lg:w-96">
             <SearchBox ref={desktopInput} items={searchItems} showShortcutHint />
