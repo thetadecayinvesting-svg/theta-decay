@@ -29,7 +29,7 @@ export default async function DashboardPage() {
 
       {missingKey && <KeyNotice what="The indicator charts" />}
 
-      <DashboardView charts={charts} />
+      <DashboardView charts={charts} explore />
     </div>
   );
 }

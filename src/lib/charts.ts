@@ -23,7 +23,7 @@ export type ChartConfig = {
   note?: string; // caveat about the data itself
   unit: string; // shown after values, e.g. "%"
   prefix?: string; // shown before values, e.g. "$"
-  period: "day" | "week" | "month" | "quarter"; // how often a new reading arrives
+  period: "day" | "week" | "month" | "quarter" | "year"; // how often a new reading arrives
   lines: LineConfig[]; // colored --chart-1, --chart-2, … in this order
   zeroLine?: boolean;
   zeroBased?: boolean; // start the y-axis at 0 (for amounts, not rates)
@@ -40,6 +40,19 @@ export const CHARTS: ChartConfig[] = [
     unit: "%",
     period: "month",
     lines: [{ key: "cpi", fredId: "CPIAUCSL", label: "CPI", units: "pc1" }],
+  },
+  {
+    key: "pce",
+    section: "economy",
+    title: "PCE Inflation",
+    keywords: ["pce", "inflation", "core pce", "personal consumption expenditures", "fed's preferred inflation", "prices", "pcepi"],
+    description: "Personal consumption expenditures prices, % change from a year ago",
+    unit: "%",
+    period: "month",
+    lines: [
+      { key: "pce", fredId: "PCEPI", label: "PCE", units: "pc1" },
+      { key: "core", fredId: "PCEPILFE", label: "Core PCE (ex food & energy)", units: "pc1" },
+    ],
   },
   {
     key: "unrate",
@@ -137,6 +150,18 @@ export const CHARTS: ChartConfig[] = [
     zeroBased: true,
     period: "month",
     lines: [{ key: "margin", finra: "marginDebt", label: "Margin debt" }],
+  },
+  {
+    key: "sentiment",
+    section: "risk",
+    title: "Consumer Sentiment",
+    keywords: ["consumer sentiment", "sentiment", "consumer confidence", "confidence", "michigan", "umich", "umcsent"],
+    description: "University of Michigan survey of how consumers feel about the economy, monthly",
+    insight:
+      "Falling sentiment means households feel worse about their finances and the economy, which can lead to weaker consumer spending, the biggest driver of U.S. growth.",
+    unit: "",
+    period: "month",
+    lines: [{ key: "sentiment", fredId: "UMCSENT", label: "Consumer sentiment" }],
   },
 ];
 

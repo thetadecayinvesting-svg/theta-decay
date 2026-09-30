@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ChartCard from "./ChartCard";
+import CustomFredCharts from "./CustomFredCharts";
 import RangeToggle, { RANGES, type Range } from "./RangeToggle";
 import { useSettings } from "./SettingsProvider";
 import { yearsAgo } from "@/lib/chartFormat";
@@ -10,7 +11,13 @@ import type { ChartResult } from "@/lib/series";
 // These charts load from 2000, so "Max" is labelled "Since 2000" here.
 const DASHBOARD_RANGES: Range[] = [...RANGES.slice(0, 3), { label: "Since 2000", years: 0 }];
 
-export default function DashboardView({ charts }: { charts: ChartResult[] }) {
+export default function DashboardView({
+  charts,
+  explore = false,
+}: {
+  charts: ChartResult[];
+  explore?: boolean; // show "Explore any FRED series" below the charts
+}) {
   const { settings } = useSettings();
   // Until the visitor picks a range here, follow their default from Settings.
   const [picked, setPicked] = useState<Range | null>(null);
@@ -34,6 +41,7 @@ export default function DashboardView({ charts }: { charts: ChartResult[] }) {
           />
         ))}
       </div>
+      {explore && <CustomFredCharts cutoff={cutoff} spanYears={spanYears} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 // Date helpers shared by every chart on the site.
 
-export type Period = "day" | "week" | "month" | "quarter";
+export type Period = "day" | "week" | "month" | "quarter" | "year";
 
 // Lines take the theme's chart colors in order: violet, teal, amber, blue.
 export const lineColor = (i: number) => `var(--chart-${i + 1})`;
@@ -12,6 +12,7 @@ export function parseDate(date: string) {
 // Label a reading the way it's usually quoted: "Aug 2026", "Q2 2026", "Sep 19, 2026".
 export function formatPeriod(date: string, period: Period) {
   const d = parseDate(date);
+  if (period === "year") return String(d.getUTCFullYear());
   if (period === "quarter") {
     return `Q${Math.floor(d.getUTCMonth() / 3) + 1} ${d.getUTCFullYear()}`;
   }

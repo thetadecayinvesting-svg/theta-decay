@@ -15,6 +15,20 @@ import { formatPeriod, formatTick, lineColor, pickTicks, type Period } from "@/l
 import type { ChartResult, LineConfig, Row } from "@/lib/series";
 import SeriesDetailsPanel from "./SeriesDetailsPanel";
 
+// 3.35 stays "3.35"; big values like 1,412.3 become "1,412" so they stay readable.
+function formatValue(v: number) {
+  return Math.abs(v) >= 1000
+    ? v.toLocaleString("en-US", { maximumFractionDigits: 0 })
+    : v.toFixed(2);
+}
+
+// Axis labels: compact for large numbers (e.g. 25,000,000 → "25M").
+function formatTickValue(v: number) {
+  return Math.abs(v) >= 10000
+    ? new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(v)
+    : String(v);
+}
+
 // Most recent value for a line, and its change from the reading before.
 function latestReading(rows: Row[], key: string) {
   const withValue = rows.filter((r) => r.values[key] !== undefined);
@@ -43,7 +57,7 @@ function Change({ change }: { change: number | null }) {
   const cls = change > 0 ? "text-up" : change < 0 ? "text-down" : "text-muted";
   return (
     <span className={cls}>
-      {change > 0 ? "▲" : change < 0 ? "▼" : "■"} {Math.abs(change).toFixed(2)}
+      {change > 0 ? "▲" : change < 0 ? "▼" : "■"} {formatValue(Math.abs(change))}
     </span>
   );
 }
@@ -78,7 +92,7 @@ function ChartTooltip({
               </>
             )}
             <span className="ml-auto font-semibold text-primary">
-              {prefix}{row.values[line.key].toFixed(2)}
+              {prefix}{formatValue(row.values[line.key])}
               {unit}
             </span>
           </div>
@@ -92,10 +106,12 @@ export default function ChartCard({
   chart,
   rows,
   spanYears,
+  onRemove,
 }: {
   chart: ChartResult;
   rows: Row[]; // already trimmed to the selected range
   spanYears: number;
+  onRemove?: () => void; // shown for charts the visitor added from FRED search
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const detailsId = useId();
@@ -112,7 +128,7 @@ export default function ChartCard({
         {!multi && readings[0] && (
           <div className="shrink-0 text-right">
             <div className="num text-2xl font-semibold leading-tight">
-              {chart.prefix}{readings[0].value.toFixed(2)}
+              {chart.prefix}{formatValue(readings[0].value)}
               <span className="text-base text-muted">{chart.unit}</span>
             </div>
             <div className="num text-xs text-muted">
@@ -136,7 +152,7 @@ export default function ChartCard({
                 {r && (
                   <div className="num mt-0.5 flex items-baseline gap-2">
                     <span className="text-xl font-semibold">
-                      {chart.prefix}{r.value.toFixed(2)}
+                      {chart.prefix}{formatValue(r.value)}
                       <span className="text-sm text-muted">{chart.unit}</span>
                     </span>
                     <span className="text-xs">
@@ -179,7 +195,7 @@ export default function ChartCard({
               />
               <YAxis
                 domain={chart.zeroBased ? [0, "auto"] : ["auto", "auto"]}
-                tickFormatter={(v: number) => `${chart.prefix ?? ""}${v}${chart.unit}`}
+                tickFormatter={(v: number) => `${chart.prefix ?? ""}${formatTickValue(v)}${chart.unit}`}
                 tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
                 axisLine={false}
                 tickLine={false}
@@ -224,6 +240,14 @@ export default function ChartCard({
         <div className="mt-4 flex items-center justify-between gap-4 text-xs text-muted">
           <span>
             {sourceLabel(chart.lines)}
+            {onRemove && (
+              <>
+                {" · "}
+                <button onClick={onRemove} className="font-medium text-muted hover:text-primary">
+                  Remove
+                </button>
+              </>
+            )}
             {chart.note && <> · {chart.note}</>}
           </span>
           <button

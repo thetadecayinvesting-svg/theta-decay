@@ -138,3 +138,44 @@ export async function getSeriesInfo(seriesId: string): Promise<SeriesInfo> {
     sources: sources.map((src) => ({ name: src.name, link: src.link })),
   };
 }
+
+// FRED's own search (powers "Explore any FRED series"): the 25 most relevant
+// matches, re-ordered so the most widely used series come first.
+export type SeriesSearchResult = {
+  id: string;
+  title: string;
+  frequency: string;
+  units: string;
+  seasonalAdjustment: string;
+  start: string;
+  end: string;
+};
+
+export async function searchSeries(text: string, limit = 10): Promise<SeriesSearchResult[]> {
+  const data = await fredRequest<{
+    seriess: {
+      id: string;
+      title: string;
+      frequency: string;
+      units_short: string;
+      seasonal_adjustment_short: string;
+      observation_start: string;
+      observation_end: string;
+      popularity: number;
+    }[];
+  }>("series/search", {
+    search_text: text,
+    limit: "25",
+    order_by: "search_rank",
+  });
+  const ranked = [...data.seriess].sort((a, b) => b.popularity - a.popularity).slice(0, limit);
+  return ranked.map((s) => ({
+    id: s.id,
+    title: s.title,
+    frequency: s.frequency,
+    units: s.units_short,
+    seasonalAdjustment: s.seasonal_adjustment_short,
+    start: s.observation_start,
+    end: s.observation_end,
+  }));
+}
