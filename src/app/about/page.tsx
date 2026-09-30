@@ -40,7 +40,7 @@ const SOURCES = [
 const SECTIONS = [
   {
     href: "/",
-    name: "Economic Calendar",
+    name: "Calendar",
     body: "Every scheduled FOMC rate decision and major U.S. data release (CPI, jobs, GDP and PCE), with release times in your time zone.",
   },
   {

@@ -9,16 +9,16 @@ export type SitePage = {
 
 export const PAGES: SitePage[] = [
   {
+    href: "/",
+    label: "Calendar",
+    description: "Upcoming Fed, inflation, jobs and GDP dates",
+    keywords: ["calendar", "economic calendar", "schedule", "events", "dates", "releases", "home", "upcoming"],
+  },
+  {
     href: "/dashboard",
     label: "Economic Indicators",
     description: "Dashboard: inflation, jobs, rates and growth",
     keywords: ["dashboard", "indicators", "economy", "macro", "charts", "data"],
-  },
-  {
-    href: "/",
-    label: "Economic Calendar",
-    description: "Upcoming Fed, inflation, jobs and GDP dates",
-    keywords: ["calendar", "schedule", "events", "dates", "releases", "home", "upcoming"],
   },
   {
     href: "/markets",
