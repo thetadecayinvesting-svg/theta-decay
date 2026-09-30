@@ -6,6 +6,7 @@ import LiveMiniCharts from "@/components/LiveMiniCharts";
 import PerformanceChart from "@/components/markets/PerformanceChart";
 import SpFedChart from "@/components/markets/SpFedChart";
 import StatCards from "@/components/markets/StatCards";
+import TickerTape from "@/components/TickerTape";
 import { ASSETS } from "@/lib/assets";
 import { formatPeriod } from "@/lib/chartFormat";
 import { hasBeehiiv } from "@/lib/beehiiv";
@@ -32,6 +33,8 @@ export default async function MarketsPage() {
 
   return (
     <div className="space-y-12">
+      <TickerTape />
+
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">Markets</h1>
         <p className="mt-2 max-w-2xl text-muted">

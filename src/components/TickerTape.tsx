@@ -1,11 +1,11 @@
 import TradingViewWidget from "./TradingViewWidget";
 import { ASSETS } from "@/lib/assets";
 
-// Scrolling live-price strip shown under the navigation bar on every page.
+// Scrolling live-price strip at the top of the Markets page.
 export default function TickerTape() {
   return (
-    <div className="border-b border-border">
-      <div className="mx-auto max-w-6xl px-2 sm:px-4">
+    <div className="rounded-lg border border-border bg-surface px-2 pt-1 sm:px-3">
+      <div>
         <TradingViewWidget
           script="embed-widget-ticker-tape.js"
           height={46}

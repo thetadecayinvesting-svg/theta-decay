@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, Inter, Sora } from "next/font/google";
 import SettingsProvider from "@/components/SettingsProvider";
 import SiteHeader from "@/components/SiteHeader";
-import TickerTape from "@/components/TickerTape";
 import { getCalendar } from "@/lib/calendar";
 import { buildSearchIndex } from "@/lib/searchIndex";
 import { THEME_BOOT_SCRIPT } from "@/lib/settings";
@@ -70,7 +69,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <SettingsProvider>
           <SiteHeader searchItems={searchItems} />
-          <TickerTape />
           <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
             {children}
           </main>
