@@ -63,7 +63,7 @@ export default async function Home() {
         </div>
       )}
 
-      <LatestReleases releases={latest} today={todayET()} />
+      <LatestReleases releases={latest} />
 
       <CalendarView events={events} today={todayET()} />
 

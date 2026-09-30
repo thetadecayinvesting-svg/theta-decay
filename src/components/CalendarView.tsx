@@ -7,8 +7,15 @@ import {
   type EventType,
 } from "@/lib/events";
 import { TIME_ZONES } from "@/lib/settings";
-import { formatReleaseTime } from "@/lib/timezone";
+import { SITE_URL } from "@/lib/site";
+import { easternToInstant, formatReleaseTime } from "@/lib/timezone";
+import AddToCalendar from "./AddToCalendar";
+import Countdown from "./Countdown";
 import { useSettings } from "./SettingsProvider";
+
+// Subscribe links for the whole calendar feed (/calendar.ics).
+const FEED_WEBCAL = `${SITE_URL.replace(/^https:/, "webcal:")}/calendar.ics`;
+const FEED_GOOGLE = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(FEED_WEBCAL)}`;
 
 const TYPES = Object.keys(EVENT_META) as EventType[];
 
@@ -75,13 +82,15 @@ export default function CalendarView({
   };
 
   const visible = events.filter((e) => active.has(e.type));
-  // Today's events, or else the next upcoming date, get the violet highlight.
+  // The soonest date's events go in the "Next up" card; the list shows the rest.
   const nextDate = visible[0]?.date;
   const nextUp = visible.filter((e) => e.date === nextDate);
+  const later = visible.filter((e) => e.date !== nextDate);
+  const countdownTarget = nextUp[0] ? easternToInstant(nextUp[0].date, nextUp[0].timeET) : 0;
 
   // Group the rest by month.
   const months = new Map<string, CalendarEvent[]>();
-  for (const event of visible) {
+  for (const event of later) {
     const key = event.date.slice(0, 7);
     if (!months.has(key)) months.set(key, []);
     months.get(key)!.push(event);
@@ -97,6 +106,16 @@ export default function CalendarView({
           {TIME_ZONES.find((z) => z.id === settings.timeZone)?.label ?? settings.timeZone}
         </span>
         . Change it in Settings (the gear icon, top right).
+        </p>
+        <p className="mt-2 text-sm text-muted">
+          Subscribe to every event, auto-updating:{" "}
+          <a href={FEED_GOOGLE} target="_blank" rel="noopener noreferrer" className="font-medium text-accent hover:text-accent-hover">
+            Google Calendar
+          </a>{" "}
+          ·{" "}
+          <a href={FEED_WEBCAL} className="font-medium text-accent hover:text-accent-hover">
+            Apple / Outlook
+          </a>
         </p>
       </div>
 
@@ -145,12 +164,14 @@ export default function CalendarView({
             <p className="num text-sm text-muted">
               {format(nextDate, { weekday: "long", month: "long", day: "numeric" })}
               {" · "}
-              <span className="text-primary">{relative(daysBetween(today, nextDate))}</span>
+              <span className="font-medium text-primary">
+                <Countdown target={countdownTarget} fallback={relative(daysBetween(today, nextDate))} />
+              </span>
             </p>
           </div>
           <div className="mt-5 space-y-6">
             {nextUp.map((event) => (
-              <div key={event.type}>
+              <div key={event.type} id={`event-${event.date}-${event.type}`} className="rounded-lg">
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="mr-1 text-xl font-semibold tracking-tight sm:text-2xl">
                     {event.title}
@@ -158,9 +179,12 @@ export default function CalendarView({
                   <Tags type={event.type} />
                 </div>
                 <p className="mt-1.5 text-sm text-muted">{event.detail}</p>
-                <p className="num mt-1 text-sm text-muted">
-                  <ReleaseTime event={event} timeZone={settings.timeZone} />
-                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <p className="num text-sm text-muted">
+                    <ReleaseTime event={event} timeZone={settings.timeZone} />
+                  </p>
+                  <AddToCalendar event={event} />
+                </div>
               </div>
             ))}
           </div>
@@ -176,16 +200,11 @@ export default function CalendarView({
           <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface font-table">
             {items.map((event) => {
               const days = daysBetween(today, event.date);
-              const highlighted = event.date === nextDate;
               return (
                 <li
                   key={`${event.date}-${event.type}`}
                   id={`event-${event.date}-${event.type}`}
-                  className={`flex items-center gap-5 border-l-4 px-5 py-4 transition-colors ${
-                    highlighted
-                      ? "border-l-accent bg-accent-soft"
-                      : "border-l-transparent hover:bg-surface-hover"
-                  }`}
+                  className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-surface-hover sm:gap-5"
                 >
                   <div className="w-11 shrink-0 text-center">
                     <div className="text-[11px] font-medium uppercase text-muted">
@@ -206,10 +225,9 @@ export default function CalendarView({
                     <div className="num text-sm">
                       <ReleaseTime event={event} timeZone={settings.timeZone} />
                     </div>
-                    <div className={`text-xs ${highlighted ? "text-accent-hover" : "text-muted"}`}>
-                      {relative(days)}
-                    </div>
+                    <div className="text-xs text-muted">{relative(days)}</div>
                   </div>
+                  <AddToCalendar event={event} compact />
                 </li>
               );
             })}
