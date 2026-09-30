@@ -41,14 +41,8 @@ async function fetchChart(id: string): Promise<Entry> {
   }
 }
 
-// "Explore any FRED series": search FRED, add charts, remembered in this browser.
-export default function CustomFredCharts({
-  cutoff,
-  spanYears,
-}: {
-  cutoff: string; // "" = show everything loaded
-  spanYears: number;
-}) {
+// "Explore any FRED series": the visitor's added charts, remembered in this browser.
+export function useCustomCharts() {
   const [entries, setEntries] = useState<Entry[]>([]);
 
   const load = useCallback(async (id: string) => {
@@ -85,55 +79,78 @@ export default function CustomFredCharts({
     });
   };
 
+  return { entries, add, remove };
+}
+
+type CustomCharts = ReturnType<typeof useCustomCharts>;
+
+// Heading + search box (shown at the top of Economic Indicators).
+export function FredSearchSection({ custom }: { custom: CustomCharts }) {
   return (
-    <section className="space-y-5 pt-6">
+    <section className="space-y-3">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight">Explore any FRED series</h2>
+        <h2 className="text-lg font-semibold tracking-tight">Explore any FRED series</h2>
         <p className="mt-1 text-sm text-muted">
           Search more than 800,000 data series from the Federal Reserve Bank of St. Louis and
-          add them here. Charts you add are saved in this browser.
+          add them as charts. Charts you add are saved in this browser.
         </p>
       </div>
-
       <FredExplorer
-        addedIds={entries.map((e) => e.id)}
-        onAdd={add}
-        disabled={entries.length >= MAX_CHARTS}
+        addedIds={custom.entries.map((e) => e.id)}
+        onAdd={custom.add}
+        disabled={custom.entries.length >= MAX_CHARTS}
       />
+    </section>
+  );
+}
 
-      {entries.length > 0 && (
-        <div className="grid items-start gap-6 lg:grid-cols-2">
-          {entries.map((entry) =>
-            entry.status === "ready" ? (
-              <ChartCard
-                key={entry.id}
-                chart={entry.chart}
-                rows={cutoff ? entry.chart.rows.filter((r) => r.date >= cutoff) : entry.chart.rows}
-                spanYears={spanYears}
-                onRemove={() => remove(entry.id)}
-              />
-            ) : (
-              <div
-                key={entry.id}
-                className="flex min-h-40 flex-col justify-between rounded-lg border border-border bg-surface p-6"
-              >
-                <div>
-                  <h3 className="font-medium">{entry.id}</h3>
-                  <p className="mt-2 text-sm text-muted">
-                    {entry.status === "loading" ? "Loading from FRED…" : entry.error}
-                  </p>
-                </div>
-                <button
-                  onClick={() => remove(entry.id)}
-                  className="mt-4 self-start text-xs font-medium text-muted hover:text-primary"
-                >
-                  Remove
-                </button>
+// The added charts, following the page's time range.
+export function CustomChartsGrid({
+  custom,
+  cutoff,
+  spanYears,
+}: {
+  custom: CustomCharts;
+  cutoff: string; // "" = show everything loaded
+  spanYears: number;
+}) {
+  const { entries, remove } = custom;
+  if (entries.length === 0) return null;
+
+  return (
+    <section className="space-y-3">
+      <h2 className="text-sm font-medium uppercase tracking-wider text-muted">Your charts</h2>
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        {entries.map((entry) =>
+          entry.status === "ready" ? (
+            <ChartCard
+              key={entry.id}
+              chart={entry.chart}
+              rows={cutoff ? entry.chart.rows.filter((r) => r.date >= cutoff) : entry.chart.rows}
+              spanYears={spanYears}
+              onRemove={() => remove(entry.id)}
+            />
+          ) : (
+            <div
+              key={entry.id}
+              className="flex min-h-40 flex-col justify-between rounded-lg border border-border bg-surface p-6"
+            >
+              <div>
+                <h3 className="font-medium">{entry.id}</h3>
+                <p className="mt-2 text-sm text-muted">
+                  {entry.status === "loading" ? "Loading from FRED…" : entry.error}
+                </p>
               </div>
-            ),
-          )}
-        </div>
-      )}
+              <button
+                onClick={() => remove(entry.id)}
+                className="mt-4 self-start text-xs font-medium text-muted hover:text-primary"
+              >
+                Remove
+              </button>
+            </div>
+          ),
+        )}
+      </div>
     </section>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ChartCard from "./ChartCard";
-import CustomFredCharts from "./CustomFredCharts";
+import { CustomChartsGrid, FredSearchSection, useCustomCharts } from "./CustomFredCharts";
 import RangeToggle, { RANGES, type Range } from "./RangeToggle";
 import { useSettings } from "./SettingsProvider";
 import { yearsAgo } from "@/lib/chartFormat";
@@ -16,9 +16,10 @@ export default function DashboardView({
   explore = false,
 }: {
   charts: ChartResult[];
-  explore?: boolean; // show "Explore any FRED series" below the charts
+  explore?: boolean; // show "Explore any FRED series" (search at the top)
 }) {
   const { settings } = useSettings();
+  const custom = useCustomCharts();
   // Until the visitor picks a range here, follow their default from Settings.
   const [picked, setPicked] = useState<Range | null>(null);
   const fromSettings =
@@ -30,7 +31,9 @@ export default function DashboardView({
 
   return (
     <div className="space-y-6">
+      {explore && <FredSearchSection custom={custom} />}
       <RangeToggle ranges={DASHBOARD_RANGES} value={range} onChange={setPicked} />
+      {explore && <CustomChartsGrid custom={custom} cutoff={cutoff} spanYears={spanYears} />}
       <div className="grid items-start gap-6 lg:grid-cols-2">
         {charts.map((c) => (
           <ChartCard
@@ -41,7 +44,6 @@ export default function DashboardView({
           />
         ))}
       </div>
-      {explore && <CustomFredCharts cutoff={cutoff} spanYears={spanYears} />}
     </div>
   );
 }
