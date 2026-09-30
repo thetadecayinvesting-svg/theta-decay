@@ -5,8 +5,15 @@
 const BASE_URL = "https://api.stlouisfed.org/fred";
 const PLACEHOLDER_KEY = "paste-your-key-here";
 
-// Refresh FRED data at most once an hour.
-const REVALIDATE_SECONDS = 3600;
+// How long FRED answers are saved and shared between visitors before asking again.
+// Chart data refreshes hourly; descriptions and search results change rarely.
+const HOUR = 3600;
+const DAY = 86_400;
+
+// If FRED is busy (rate limit or a temporary error), wait and quietly retry.
+const RETRY_DELAYS_MS = [1000, 2500];
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export class MissingKeyError extends Error {
   constructor() {
@@ -22,6 +29,7 @@ export function hasFredKey() {
 async function fredRequest<T>(
   path: string,
   params: Record<string, string | undefined>,
+  revalidate: number = HOUR,
 ): Promise<T> {
   if (!hasFredKey()) throw new MissingKeyError();
 
@@ -32,7 +40,12 @@ async function fredRequest<T>(
   url.searchParams.set("api_key", process.env.FRED_API_KEY!.trim());
   url.searchParams.set("file_type", "json");
 
-  const res = await fetch(url, { next: { revalidate: REVALIDATE_SECONDS } });
+  let res = await fetch(url, { next: { revalidate } });
+  for (const delay of RETRY_DELAYS_MS) {
+    if (res.ok || !RETRYABLE_STATUS.has(res.status)) break;
+    await sleep(delay);
+    res = await fetch(url, { next: { revalidate } });
+  }
   if (!res.ok) {
     // FRED explains errors in JSON; never echo the URL, since it contains the key.
     const body = (await res.json().catch(() => null)) as {
@@ -111,18 +124,22 @@ export async function getSeriesInfo(seriesId: string): Promise<SeriesInfo> {
         notes?: string;
         last_updated: string;
       }[];
-    }>("series", { series_id: seriesId }),
-    fredRequest<{ releases: { id: number; name: string; link?: string }[] }>("series/release", {
-      series_id: seriesId,
-    }),
+    }>("series", { series_id: seriesId }, DAY),
+    fredRequest<{ releases: { id: number; name: string; link?: string }[] }>(
+      "series/release",
+      { series_id: seriesId },
+      DAY,
+    ),
   ]);
   const s = seriesData.seriess[0];
   const release = releaseData.releases[0] ?? null;
   const sources = release
     ? (
-        await fredRequest<{ sources: { name: string; link?: string }[] }>("release/sources", {
-          release_id: String(release.id),
-        })
+        await fredRequest<{ sources: { name: string; link?: string }[] }>(
+          "release/sources",
+          { release_id: String(release.id) },
+          DAY,
+        )
       ).sources
     : [];
 
@@ -163,11 +180,11 @@ export async function searchSeries(text: string, limit = 10): Promise<SeriesSear
       observation_end: string;
       popularity: number;
     }[];
-  }>("series/search", {
-    search_text: text,
-    limit: "25",
-    order_by: "search_rank",
-  });
+  }>(
+    "series/search",
+    { search_text: text, limit: "25", order_by: "search_rank" },
+    DAY,
+  );
   const ranked = [...data.seriess].sort((a, b) => b.popularity - a.popularity).slice(0, limit);
   return ranked.map((s) => ({
     id: s.id,
