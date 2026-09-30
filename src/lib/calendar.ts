@@ -69,6 +69,7 @@ function formatShortRange(start: string, end: string) {
 function fomcEvents(): CalendarEvent[] {
   return FOMC_MEETINGS.map(([start, end, sep]) => ({
     date: end,
+    meetingStart: start,
     type: "FOMC",
     title: "FOMC Rate Decision",
     detail: `Two-day meeting ${formatShortRange(start, end)}${
@@ -122,4 +123,51 @@ export async function getCalendar(): Promise<{
     .sort((a, b) => a.date.localeCompare(b.date) || a.type.localeCompare(b.type));
 
   return { events: upcoming, errors, missingKey };
+}
+
+// Minutes since midnight in New York right now.
+function minutesNowET() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    hourCycle: "h23",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).formatToParts(new Date());
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value);
+  return get("hour") * 60 + get("minute");
+}
+
+// The most recent event of each type that has already happened (newest first).
+// Same-day releases count once their time has passed, plus a short buffer for
+// FRED to publish the new numbers.
+export async function getRecentEvents(): Promise<CalendarEvent[]> {
+  const today = todayET();
+  const nowMinutes = minutesNowET();
+  const from = new Date(Date.now() - 150 * 86_400_000).toISOString().slice(0, 10);
+  const events = fomcEvents();
+
+  if (hasFredKey()) {
+    const results = await Promise.allSettled(FRED_RELEASES.map((r) => getReleaseDates(r.id, from)));
+    results.forEach((result, i) => {
+      if (result.status !== "fulfilled") return;
+      const release = FRED_RELEASES[i];
+      for (const date of result.value) {
+        events.push({ date, type: release.type, title: release.title, detail: release.detail, timeET: "08:30" });
+      }
+    });
+  }
+
+  const happened = (e: CalendarEvent) => {
+    if (e.date < today) return true;
+    if (e.date > today) return false;
+    const [h, m] = e.timeET.split(":").map(Number);
+    return nowMinutes >= h * 60 + m + 30;
+  };
+
+  const latest = new Map<EventType, CalendarEvent>();
+  for (const e of events.filter(happened)) {
+    const current = latest.get(e.type);
+    if (!current || e.date > current.date) latest.set(e.type, e);
+  }
+  return [...latest.values()].sort((a, b) => b.date.localeCompare(a.date));
 }

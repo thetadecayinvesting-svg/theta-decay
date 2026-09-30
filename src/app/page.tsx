@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import CalendarView from "@/components/CalendarView";
 import KeyNotice from "@/components/KeyNotice";
+import LatestReleases from "@/components/LatestReleases";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import { hasBeehiiv } from "@/lib/beehiiv";
 import { getCalendar, todayET } from "@/lib/calendar";
+import { getLatestReleases } from "@/lib/latest";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -26,7 +28,10 @@ const websiteJsonLd = {
 export const revalidate = 3600;
 
 export default async function Home() {
-  const { events, errors, missingKey } = await getCalendar();
+  const [{ events, errors, missingKey }, latest] = await Promise.all([
+    getCalendar(),
+    getLatestReleases(),
+  ]);
 
   return (
     <div className="space-y-10">
@@ -57,6 +62,8 @@ export default async function Home() {
           </ul>
         </div>
       )}
+
+      <LatestReleases releases={latest} today={todayET()} />
 
       <CalendarView events={events} today={todayET()} />
 

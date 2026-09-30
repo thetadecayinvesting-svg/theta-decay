@@ -8,6 +8,7 @@ export type CalendarEvent = {
   title: string;
   detail: string;
   timeET: string; // official release time, 24-hour Eastern Time, e.g. "08:30"
+  meetingStart?: string; // FOMC only: first day of the two-day meeting
 };
 
 // highImpact events get the violet "High impact" badge on the calendar.

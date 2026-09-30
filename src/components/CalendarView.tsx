@@ -89,13 +89,16 @@ export default function CalendarView({
 
   return (
     <div className="space-y-10">
-      <p className="-mt-6 text-sm text-muted">
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight">Upcoming events</h2>
+        <p className="mt-1 text-sm text-muted">
         Times shown in{" "}
         <span className="text-primary">
           {TIME_ZONES.find((z) => z.id === settings.timeZone)?.label ?? settings.timeZone}
         </span>
         . Change it in Settings (the gear icon, top right).
-      </p>
+        </p>
+      </div>
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
