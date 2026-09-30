@@ -18,7 +18,7 @@ export default function TickerTape() {
             showSymbolLogo: true,
             isTransparent: true,
             displayMode: "adaptive",
-            colorTheme: "dark",
+            colorTheme: "var(--tv-color-theme)", // dark or light, from globals.css
             locale: "en",
           }}
         />

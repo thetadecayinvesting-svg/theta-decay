@@ -25,6 +25,7 @@ export default function TradingViewWidget({
   // Re-draw with the new colors when the visitor switches theme.
   const { settings, loaded } = useSettings();
   const theme = settings.theme;
+  const mode = settings.mode;
 
   useEffect(() => {
     const el = host.current;
@@ -81,7 +82,7 @@ export default function TradingViewWidget({
       if (idleHandle !== undefined) window.cancelIdleCallback?.(idleHandle);
       el.replaceChildren(); // clear the widget so the next load starts fresh
     };
-  }, [script, configJson, theme, loaded, height]);
+  }, [script, configJson, theme, mode, loaded, height]);
 
   return (
     <div>

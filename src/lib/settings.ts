@@ -3,9 +3,11 @@
 
 export type ThemeId = "deep-violet" | "midnight-gold" | "terminal-teal";
 export type RangeId = "1Y" | "5Y" | "10Y" | "Max";
+export type ModeId = "dark" | "light";
 
 export type Settings = {
   version: 1;
+  mode: ModeId;
   theme: ThemeId;
   defaultRange: RangeId;
   timeZone: string; // IANA name, e.g. "America/New_York"
@@ -13,6 +15,7 @@ export type Settings = {
 
 export const DEFAULT_SETTINGS: Settings = {
   version: 1,
+  mode: "dark",
   theme: "deep-violet",
   defaultRange: "10Y",
   timeZone: "America/New_York",
@@ -22,6 +25,11 @@ export const THEMES: { id: ThemeId; label: string; swatch: string }[] = [
   { id: "deep-violet", label: "Deep Violet", swatch: "#8b7cf6" },
   { id: "midnight-gold", label: "Midnight Gold", swatch: "#e3b34c" },
   { id: "terminal-teal", label: "Terminal Teal", swatch: "#2dd4bf" },
+];
+
+export const MODES: { id: ModeId; label: string }[] = [
+  { id: "dark", label: "Dark" },
+  { id: "light", label: "Light" },
 ];
 
 export const RANGE_IDS: RangeId[] = ["1Y", "5Y", "10Y", "Max"];
@@ -46,6 +54,7 @@ export function sanitizeSettings(raw: unknown): Settings {
   const s = (raw && typeof raw === "object" ? raw : {}) as Partial<Settings>;
   return {
     version: 1,
+    mode: s.mode === "light" ? "light" : "dark",
     theme: THEMES.some((t) => t.id === s.theme) ? s.theme! : DEFAULT_SETTINGS.theme,
     defaultRange: RANGE_IDS.includes(s.defaultRange as RangeId)
       ? s.defaultRange!
@@ -82,9 +91,10 @@ export const browserSettingsStore: SettingsStore = {
   },
 };
 
-// Runs in <head> before the page paints, so a saved theme never flashes.
+// Runs in <head> before the page paints, so a saved theme or light mode never
+// flashes. Dark mode and Deep Violet are the defaults (no attributes needed).
 export const THEME_BOOT_SCRIPT = `(function(){try{var s=JSON.parse(localStorage.getItem(${JSON.stringify(
   STORAGE_KEY,
-)})||"null");var t=s&&s.theme;if(t&&t!=="deep-violet"&&${JSON.stringify(
+)})||"null");if(!s)return;var r=document.documentElement;var t=s.theme;if(t&&t!=="deep-violet"&&${JSON.stringify(
   THEMES.map((t) => t.id),
-)}.indexOf(t)>-1)document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`;
+)}.indexOf(t)>-1)r.setAttribute("data-theme",t);if(s.mode==="light")r.setAttribute("data-mode","light")}catch(e){}})()`;

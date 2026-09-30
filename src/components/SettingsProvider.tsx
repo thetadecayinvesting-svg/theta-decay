@@ -54,6 +54,14 @@ export default function SettingsProvider({
     else root.setAttribute("data-theme", settings.theme);
   }, [settings.theme, loaded]);
 
+  // Light mode is opt-in; dark is the default, so it has no attribute.
+  useEffect(() => {
+    if (!loaded) return;
+    const root = document.documentElement;
+    if (settings.mode === "light") root.setAttribute("data-mode", "light");
+    else root.removeAttribute("data-mode");
+  }, [settings.mode, loaded]);
+
   const update = useCallback<SettingsContextValue["update"]>(
     (changes) => {
       setSettings((prev) => {

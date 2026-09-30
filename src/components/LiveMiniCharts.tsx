@@ -21,7 +21,7 @@ export default function LiveMiniCharts() {
               height: 180,
               locale: "en",
               dateRange: "1M",
-              colorTheme: "dark",
+              colorTheme: "var(--tv-color-theme)", // dark or light, from globals.css
               isTransparent: true,
               autosize: false,
               chartOnly: false,

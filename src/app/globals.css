@@ -38,6 +38,7 @@
   --tv-line: #8b7cf6;
   --tv-area-top: rgba(139, 124, 246, 0.25);
   --tv-area-bottom: rgba(139, 124, 246, 0);
+  --tv-color-theme: dark; /* TradingView widget style: dark or light */
 
   /* ---- Shape ------------------------------------------------------- */
   --radius: 8px;
@@ -160,4 +161,74 @@ h3 {
   100% {
     box-shadow: 0 0 0 2px transparent;
   }
+}
+
+/* =====================================================================
+   LIGHT MODE — chosen under Settings → Appearance (dark is the default).
+   Shared light surfaces first, then each theme's darker accents, which
+   keep text and chart lines readable on white (WCAG AA checked).
+   ===================================================================== */
+:root[data-mode="light"] {
+  color-scheme: light;
+  --bg: #f6f6f9;
+  --surface: #ffffff;
+  --border: #e3e2ea;
+  --surface-hover: #f0eff5;
+  --text-primary: #16151f;
+  --text-muted: #5d5a6e;
+  --on-accent: #ffffff;
+  --up: #15803d;
+  --down: #c81e1e;
+  --chart-grid: #e8e7ee;
+  --chart-axis: #5d5a6e;
+  --tv-color-theme: light;
+
+  /* Deep Violet (light) */
+  --accent: #6453e0;
+  --accent-hover: #4f3dc9;
+  --accent-soft: rgb(100 83 224 / 0.12);
+  --chart-1: #6453e0; /* violet */
+  --chart-2: #0d9488; /* teal */
+  --chart-3: #b45309; /* amber */
+  --chart-4: #2563eb; /* blue */
+  --tv-line: #6453e0;
+  --tv-area-top: rgba(100, 83, 224, 0.18);
+  --tv-area-bottom: rgba(100, 83, 224, 0);
+}
+
+:root[data-mode="light"][data-theme="midnight-gold"] {
+  --accent: #9a5b00;
+  --accent-hover: #7a4700;
+  --accent-soft: rgb(154 91 0 / 0.12);
+  --chart-1: #9a5b00; /* gold */
+  --chart-2: #2563eb; /* blue */
+  --chart-3: #0d9488; /* teal */
+  --chart-4: #7c3aed; /* violet */
+  --tv-line: #9a5b00;
+  --tv-area-top: rgba(154, 91, 0, 0.18);
+  --tv-area-bottom: rgba(154, 91, 0, 0);
+}
+
+:root[data-mode="light"][data-theme="terminal-teal"] {
+  --accent: #0f766e;
+  --accent-hover: #0b5c56;
+  --accent-soft: rgb(15 118 110 / 0.12);
+  --chart-1: #0d9488; /* teal (brighter for chart lines) */
+  --chart-2: #6d28d9; /* violet */
+  --chart-3: #b45309; /* amber */
+  --chart-4: #2563eb; /* blue */
+  --tv-line: #0d9488;
+  --tv-area-top: rgba(13, 148, 136, 0.18);
+  --tv-area-bottom: rgba(13, 148, 136, 0);
+}
+
+/* The logo comes in dark- and light-background versions. */
+.logo-for-light {
+  display: none;
+}
+:root[data-mode="light"] .logo-for-dark {
+  display: none;
+}
+:root[data-mode="light"] .logo-for-light {
+  display: block;
 }

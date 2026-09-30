@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSettings } from "./SettingsProvider";
-import { RANGE_IDS, THEMES, TIME_ZONES } from "@/lib/settings";
+import { MODES, RANGE_IDS, THEMES, TIME_ZONES } from "@/lib/settings";
 
 // Gear button + dropdown with the visitor's settings (saved in this browser).
 // When accounts are added, a "Sign in" row can go at the top of this panel;
@@ -63,6 +63,33 @@ export default function SettingsMenu() {
           className="absolute right-0 top-full z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] space-y-5 rounded-lg border border-border bg-surface p-5 shadow-2xl"
         >
           <h2 className="font-semibold tracking-tight">Settings</h2>
+
+          <fieldset>
+            <legend className="mb-2 text-xs font-medium uppercase tracking-wider text-muted">
+              Appearance
+            </legend>
+            <div role="radiogroup" className="grid grid-cols-2 gap-1 rounded-lg border border-border p-1">
+              {MODES.map((mode) => {
+                const selected = settings.mode === mode.id;
+                return (
+                  <button
+                    key={mode.id}
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => update({ mode: mode.id })}
+                    className={`rounded-lg py-1.5 text-sm transition-colors ${
+                      selected
+                        ? "bg-accent-soft font-medium text-accent-hover"
+                        : "text-muted hover:text-primary"
+                    }`}
+                  >
+                    {mode.id === "dark" ? "☾ " : "☀ "}
+                    {mode.label}
+                  </button>
+                );
+              })}
+            </div>
+          </fieldset>
 
           <fieldset>
             <legend className="mb-2 text-xs font-medium uppercase tracking-wider text-muted">

@@ -38,7 +38,8 @@ export default function SiteHeader({ searchItems }: { searchItems: SearchItem[] 
 
         <div className="flex min-w-0 items-center justify-center gap-6">
           <Link href="/" aria-label="Theta Decay Investing: home" className="flex shrink-0 items-center">
-            {/* Logo from the logo kit (public/logo.svg), 343×100 */}
+            {/* Logo-kit logos (343×100): dark-background version by default,
+                light-background version in light mode (switched in globals.css). */}
             <Image
               src="/logo.svg"
               alt="Theta Decay Investing"
@@ -46,7 +47,15 @@ export default function SiteHeader({ searchItems }: { searchItems: SearchItem[] 
               height={48}
               priority
               unoptimized
-              className="h-12 w-auto"
+              className="logo-for-dark h-12 w-auto"
+            />
+            <Image
+              src="/logo-light.svg"
+              alt="Theta Decay Investing"
+              width={165}
+              height={48}
+              unoptimized
+              className="logo-for-light h-12 w-auto"
             />
           </Link>
           <div className="hidden w-80 md:block lg:w-96">
