@@ -33,7 +33,7 @@ const MARKET_CHARTS: Omit<SearchItem, "group">[] = [
   {
     id: "chart-performance",
     title: "Performance Comparison",
-    subtitle: "Markets · Nasdaq, S&P 500, Dow and Bitcoin since the same date",
+    subtitle: "Markets · Nasdaq, S&P 500 and Dow since the same date",
     href: "/markets#chart-performance",
     keywords: ["performance", "returns", "compare", "comparison", "growth"],
   },

@@ -57,6 +57,20 @@ function buildRows(assets: Asset[], series: AssetSeries[], cutoff: string) {
   return { rows, start };
 }
 
+// Round percent-change steps (e.g. 0%, +100%, +200%…) that just cover the data,
+// as index levels (100 = 0% change).
+function linearTicks(min: number, max: number) {
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return [100];
+  const lo = min - 100;
+  const hi = max - 100;
+  const step = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000].find((s) => (hi - lo) / s <= 6) ?? 2000;
+  const ticks: number[] = [];
+  for (let v = Math.floor(lo / step) * step; v <= Math.ceil(hi / step) * step; v += step) ticks.push(v + 100);
+  // Start just below the lowest point rather than a whole step lower.
+  const bottom = min - step * 0.25;
+  return [bottom, ...ticks.filter((t) => t > bottom)];
+}
+
 function lastValue(rows: Row[], key: Asset["key"]) {
   for (let i = rows.length - 1; i >= 0; i--) {
     const v = rows[i].values[key];
@@ -116,6 +130,7 @@ export default function PerformanceChart({
   const min = Math.min(...allValues);
   const max = Math.max(...allValues);
   const logTicks = LOG_TICKS.filter((t) => t >= min * 0.9 && t <= max * 1.1);
+  const linear = linearTicks(min, max);
 
   return (
     <ChartFrame
@@ -146,9 +161,9 @@ export default function PerformanceChart({
       asOf={asOf ? formatPeriod(asOf, "day") : "—"}
       source={
         <>
-          FRED, Federal Reserve Bank of St. Louis (Bitcoin: Coinbase). S&amp;P 500 and Dow
+          FRED, Federal Reserve Bank of St. Louis. S&amp;P 500 and Dow
           Jones © S&amp;P Dow Jones Indices LLC.
-          {range.years === 0 && " Max = the period all four share (FRED carries 10 years of S&P and Dow data)."}
+          {range.years === 0 && " Max = the period all three share (FRED carries 10 years of S&P and Dow data)."}
         </>
       }
     >
@@ -190,8 +205,8 @@ export default function PerformanceChart({
               />
               <YAxis
                 scale={log ? "log" : "linear"}
-                domain={log ? ["dataMin", "dataMax"] : ["auto", "auto"]}
-                ticks={log ? logTicks : undefined}
+                domain={log ? ["dataMin", "dataMax"] : [linear[0], linear.at(-1)!]}
+                ticks={log ? logTicks : linear.slice(1)}
                 allowDataOverflow={log}
                 tickFormatter={(v: number) => asChange(v)}
                 tick={{ fill: "var(--chart-axis)", fontSize: 11 }}

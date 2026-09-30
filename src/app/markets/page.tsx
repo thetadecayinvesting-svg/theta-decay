@@ -84,7 +84,8 @@ export default async function MarketsPage() {
           </p>
         )}
 
-        <PerformanceChart assets={ASSETS} series={assets} />
+        {/* Stock indices only: Bitcoin's swings would dwarf them on this chart. */}
+        <PerformanceChart assets={ASSETS.filter((a) => a.key !== "btc")} series={assets} />
         <SpFedChart sp={sp} fed={fedFunds.points} />
       </section>
 
