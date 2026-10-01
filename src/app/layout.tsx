@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, Inter, Sora } from "next/font/google";
 import SettingsProvider from "@/components/SettingsProvider";
 import SiteHeader from "@/components/SiteHeader";
+import Link from "next/link";
 import { getCalendar } from "@/lib/calendar";
 import { buildSearchIndex } from "@/lib/searchIndex";
 import { THEME_BOOT_SCRIPT } from "@/lib/settings";
@@ -77,6 +78,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             Data: FRED®, Federal Reserve Bank of St. Louis; FINRA Margin
             Statistics; FOMC schedule from
             federalreserve.gov. For information only — not investment advice.
+            <nav aria-label="Footer" className="mt-2 flex gap-4">
+              <Link href="/about" className="hover:text-primary">About</Link>
+              <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
+            </nav>
           </div>
         </footer>
         </SettingsProvider>

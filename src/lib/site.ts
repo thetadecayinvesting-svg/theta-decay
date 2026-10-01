@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 export const SITE_URL = "https://thetadecayinvesting.com";
 export const SITE_NAME = "Theta Decay Investing";
 export const NEWSLETTER_NAME = "Out of the Money Weekly";
+export const CONTACT_EMAIL = "hello@thetadecayinvesting.com"; // forwards to Gmail via ImprovMX
 export const SITE_TAGLINE = "Economic Calendar, Indicators & Markets";
 export const SITE_DESCRIPTION =
   "Free economic calendar, macro indicators and market risk dashboard: FOMC, CPI, jobs, GDP and PCE dates, plus live charts from FRED.";

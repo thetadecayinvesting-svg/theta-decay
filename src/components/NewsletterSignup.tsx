@@ -59,7 +59,10 @@ export default function NewsletterSignup({
           <span className="font-medium text-primary">⚠ {state.message}</span>
         ) : (
           <span className="text-muted">
-            One email a week. Free, unsubscribe anytime, and we never sell your email.
+            One email a week. Free, unsubscribe anytime, and we never sell your email.{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-primary">
+              Privacy Policy
+            </Link>
           </span>
         )}
       </p>
