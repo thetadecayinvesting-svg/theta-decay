@@ -1,6 +1,7 @@
 // Short, factual summaries of the most recent Fed decision / data release(s),
 // written from official FRED numbers (shown at the top of the calendar), e.g.
-// "The Bureau of Economic Analysis reported that real GDP growth was 1.5% in Q2 2026."
+// "The Bureau of Economic Analysis reported that real gross domestic product (GDP)
+// in the United States increased at an annualized rate of 2.2% in Q2 2026."
 
 import { getRecentEvents } from "./calendar";
 import type { EventType } from "./events";
@@ -23,6 +24,8 @@ const asDate = (d: string) => new Date(`${d}T12:00:00Z`);
 const monthName = (d: string) => asDate(d).toLocaleDateString("en-US", { month: "long", timeZone: "UTC" });
 const quarterName = (d: string) => `Q${Math.floor((Number(d.slice(5, 7)) - 1) / 3) + 1} ${d.slice(0, 4)}`;
 const pct = (v: number, digits = 2) => `${v.toFixed(digits)}%`;
+// "increased 3.42%" / "decreased 0.40%" (uses the absolute value).
+const change = (v: number, digits = 2) => `${v >= 0 ? "increased" : "decreased"} ${pct(Math.abs(v), digits)}`;
 
 // Value on or before a date.
 function valueOn(points: Point[], date: string) {
@@ -49,8 +52,11 @@ async function summarize(
         type, date, title: "CPI Report", href: "/dashboard#chart-cpi",
         headline: pct(now.value), headlineLabel: `Annual inflation, ${monthName(now.date)}`,
         summary:
-          `The Bureau of Labor Statistics reported that annual CPI inflation was ${pct(now.value)} in ${monthName(now.date)}` +
-          (coreNow ? `, with core CPI at ${pct(coreNow.value)}.` : "."),
+          `The Bureau of Labor Statistics reported that the Consumer Price Index (CPI) ${change(now.value)} ` +
+          `over the 12 months ending in ${monthName(now.date)}` +
+          (coreNow
+            ? `, while core CPI, which excludes food and energy, ${change(coreNow.value)}.`
+            : "."),
       };
     }
 
@@ -66,8 +72,11 @@ async function summarize(
         type, date, title: "PCE Inflation", href: "/dashboard#chart-pce",
         headline: pct(now.value), headlineLabel: `PCE inflation, ${monthName(now.date)}`,
         summary:
-          `The Bureau of Economic Analysis reported that annual PCE inflation was ${pct(now.value)} in ${monthName(now.date)}` +
-          (coreNow ? `, with core PCE at ${pct(coreNow.value)}.` : "."),
+          `The Bureau of Economic Analysis reported that the personal consumption expenditures (PCE) price index ` +
+          `${change(now.value)} over the 12 months ending in ${monthName(now.date)}` +
+          (coreNow
+            ? `, while the core PCE price index, which excludes food and energy, ${change(coreNow.value)}.`
+            : "."),
       };
     }
 
@@ -85,8 +94,9 @@ async function summarize(
         headline: `${jobs.value >= 0 ? "+" : "−"}${Math.round(Math.abs(jobs.value))}K`,
         headlineLabel: `Jobs added, ${monthName(jobs.date)}`,
         summary:
-          `The Bureau of Labor Statistics reported that employers ${jobs.value >= 0 ? "added" : "cut"} ${count} jobs ` +
-          `in ${monthName(jobs.date)} and the unemployment rate was ${pct(rate.value, 1)}.`,
+          `The Bureau of Labor Statistics reported that total nonfarm payroll employment ` +
+          `${jobs.value >= 0 ? "increased" : "decreased"} by ${count} in ${monthName(jobs.date)}, ` +
+          `and the unemployment rate was ${pct(rate.value, 1)}.`,
       };
     }
 
@@ -96,7 +106,9 @@ async function summarize(
       return {
         type, date, title: "GDP Report", href: "/dashboard#chart-gdp",
         headline: pct(now.value, 1), headlineLabel: `Real GDP growth, ${quarterName(now.date)}`,
-        summary: `The Bureau of Economic Analysis reported that real GDP growth was ${pct(now.value, 1)} (annualized) in ${quarterName(now.date)}.`,
+        summary:
+          `The Bureau of Economic Analysis reported that real gross domestic product (GDP) in the United States ` +
+          `${now.value >= 0 ? "increased" : "decreased"} at an annualized rate of ${pct(Math.abs(now.value), 1)} in ${quarterName(now.date)}.`,
       };
     }
 
@@ -118,8 +130,8 @@ async function summarize(
       const bp = Math.round(Math.abs(diff) * 100);
       const summary =
         Math.abs(diff) < 0.001
-          ? `The Federal Reserve held the federal funds rate target range at ${range}.`
-          : `The Federal Reserve ${diff > 0 ? "raised" : "lowered"} the federal funds rate target range by ${bp} basis points to ${range}.`;
+          ? `The Federal Open Market Committee (FOMC) maintained the target range for the federal funds rate at ${range}.`
+          : `The Federal Open Market Committee (FOMC) ${diff > 0 ? "raised" : "lowered"} the target range for the federal funds rate by ${bp} basis points to ${range}.`;
       return {
         type, date, title: "FOMC Rate Decision", href: "/dashboard#chart-fedfunds",
         headline: range, headlineLabel: "Fed funds target range", summary,
