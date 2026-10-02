@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
+  EVENT_GUIDES,
   EVENT_META,
   type CalendarEvent,
   type EventType,
@@ -181,6 +183,12 @@ export default function CalendarView({
                   <Tags type={event.type} withSep={event.withSep} />
                 </div>
                 <p className="mt-1.5 text-sm text-muted">{event.detail}</p>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+                  {EVENT_GUIDES[event.type].summary}{" "}
+                  <Link href={EVENT_GUIDES[event.type].href} className="font-medium text-accent hover:text-accent-hover">
+                    Learn more →
+                  </Link>
+                </p>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
                   <p className="num text-sm text-muted">
                     <ReleaseTime event={event} timeZone={settings.timeZone} />
@@ -220,6 +228,14 @@ export default function CalendarView({
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="mr-1 font-medium">{event.title}</span>
                       <Tags type={event.type} withSep={event.withSep} />
+                      <Link
+                        href={EVENT_GUIDES[event.type].href}
+                        aria-label={`What is the ${event.title}?`}
+                        title={EVENT_GUIDES[event.type].summary}
+                        className="grid h-5 w-5 place-items-center rounded-full border border-border text-[11px] text-muted hover:border-accent hover:text-accent"
+                      >
+                        ?
+                      </Link>
                     </div>
                     <p className="mt-0.5 truncate text-sm text-muted">{event.detail}</p>
                   </div>

@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return PUBLIC_PATHS.map((path) => ({
     url: siteUrl(path),
     lastModified: new Date(),
-    changeFrequency: ["/newsletter", "/about", "/privacy"].includes(path) ? "monthly" : "daily",
+    changeFrequency: ["/newsletter", "/about", "/privacy", "/learn"].includes(path) ? "monthly" : "daily",
     priority: path === "/" ? 1 : 0.8,
   }));
 }

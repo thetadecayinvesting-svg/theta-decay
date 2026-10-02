@@ -5,6 +5,7 @@
 import { ASSETS } from "./assets";
 import { CHARTS } from "./charts";
 import type { CalendarEvent, EventType } from "./events";
+import { LEARN_TOPICS, learnHref } from "./learnTopics";
 import { PAGES } from "./pages";
 
 export type SearchGroup = "Charts" | "Calendar" | "Pages";
@@ -140,7 +141,17 @@ export function buildSearchIndex(upcoming: CalendarEvent[]): SearchItem[] {
     keywords: p.keywords,
   }));
 
-  return [...charts, ...calendar, ...pages];
+  // Learn guides are listed with the pages ("what is cpi" → the CPI guide).
+  const guides: SearchItem[] = LEARN_TOPICS.map((t) => ({
+    id: `guide-${t.slug}`,
+    group: "Pages",
+    title: `Guide: ${t.title}`,
+    subtitle: t.short,
+    href: learnHref(t.slug),
+    keywords: t.keywords,
+  }));
+
+  return [...charts, ...calendar, ...pages, ...guides];
 }
 
 const normalize = (s: string) =>

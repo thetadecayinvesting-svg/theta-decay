@@ -33,6 +33,12 @@ export const PAGES: SitePage[] = [
     keywords: ["risk", "market risk", "fear", "volatility", "credit", "spreads"],
   },
   {
+    href: "/learn",
+    label: "Learn",
+    description: "Plain-English guides to the indicators",
+    keywords: ["learn", "guides", "explained", "education", "what is", "beginner"],
+  },
+  {
     href: "/newsletter",
     label: "Newsletter",
     description: "Out of the Money Weekly: free weekly briefing",

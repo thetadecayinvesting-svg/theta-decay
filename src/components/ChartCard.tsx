@@ -13,6 +13,8 @@ import {
 } from "recharts";
 import { formatPeriod, formatTick, lineColor, pickTicks, type Period } from "@/lib/chartFormat";
 import type { ChartResult, LineConfig, Row } from "@/lib/series";
+import Link from "next/link";
+import { EXPLAINERS } from "@/lib/explainers";
 import SeriesDetailsPanel from "./SeriesDetailsPanel";
 
 // 3.35 stays "3.35"; big values like 1,412.3 become "1,412" so they stay readable.
@@ -114,6 +116,8 @@ export default function ChartCard({
   onRemove?: () => void; // shown for charts the visitor added from FRED search
 }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [showExplainer, setShowExplainer] = useState(false);
+  const explainer = EXPLAINERS[chart.key];
   const detailsId = useId();
   const multi = chart.lines.length > 1;
   const readings = chart.lines.map((line) => latestReading(chart.rows, line.key));
@@ -250,6 +254,17 @@ export default function ChartCard({
             )}
             {chart.note && <> · {chart.note}</>}
           </span>
+          <div className="flex shrink-0 items-center gap-4">
+          {explainer && (
+            <button
+              onClick={() => setShowExplainer((v) => !v)}
+              aria-expanded={showExplainer}
+              className="inline-flex items-center gap-1 font-medium text-accent hover:text-accent-hover"
+            >
+              <span aria-hidden className="grid h-4 w-4 place-items-center rounded-full border border-current text-[10px] leading-none">?</span>
+              What is this?
+            </button>
+          )}
           <button
             onClick={() => setShowDetails((v) => !v)}
             aria-expanded={showDetails}
@@ -266,6 +281,29 @@ export default function ChartCard({
               <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+          </div>
+        </div>
+      )}
+
+      {explainer && showExplainer && (
+        <div className="mt-4 space-y-3 rounded-lg bg-accent-soft p-4 text-sm leading-relaxed">
+          <p>
+            <span className="font-medium text-primary">What it is: </span>
+            <span className="text-muted">{explainer.what}</span>
+          </p>
+          <p>
+            <span className="font-medium text-primary">Why markets care: </span>
+            <span className="text-muted">{explainer.whyItMatters}</span>
+          </p>
+          <p>
+            <span className="font-medium text-primary">What to watch: </span>
+            <span className="text-muted">{explainer.watch}</span>
+          </p>
+          {explainer.learnHref && (
+            <Link href={explainer.learnHref} className="inline-block font-medium text-accent-hover hover:underline">
+              Read the full guide →
+            </Link>
+          )}
         </div>
       )}
 
