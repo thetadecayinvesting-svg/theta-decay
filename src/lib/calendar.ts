@@ -66,6 +66,44 @@ function formatShortRange(start: string, end: string) {
   return `${fmt(start)}–${fmt(end).replace(/^\w+ /, "")}`;
 }
 
+// ISM Report On Business release dates (Institute for Supply Management), 10:00 AM ET.
+// ISM data isn't on FRED, so these come from ISM's published schedule. Add the
+// next year's dates when ISM publishes them (ismworld.org, "Report On Business").
+const ISM_RELEASES: { date: string; kind: "Manufacturing" | "Services" }[] = [
+  { date: "2026-10-01", kind: "Manufacturing" },
+  { date: "2026-10-05", kind: "Services" },
+  { date: "2026-11-02", kind: "Manufacturing" },
+  { date: "2026-11-04", kind: "Services" },
+  { date: "2026-12-01", kind: "Manufacturing" },
+  { date: "2026-12-03", kind: "Services" },
+];
+
+function ismEvents(): CalendarEvent[] {
+  return ISM_RELEASES.map(({ date, kind }) => ({
+    date,
+    type: "ISM",
+    title: `ISM ${kind} PMI`,
+    detail:
+      kind === "Manufacturing"
+        ? "Purchasing Managers' Index for U.S. manufacturing; above 50 means expansion — ISM"
+        : "Purchasing Managers' Index for U.S. services; above 50 means expansion — ISM",
+    timeET: "10:00",
+  }));
+}
+
+// Summary of Economic Projections: published with the statement at four of the
+// eight FOMC meetings (the ones marked in FOMC_MEETINGS).
+function sepEvents(): CalendarEvent[] {
+  return FOMC_MEETINGS.filter(([, , sep]) => sep).map(([start, end]) => ({
+    date: end,
+    meetingStart: start,
+    type: "SEP",
+    title: "Summary of Economic Projections",
+    detail: "Fed officials' forecasts for rates, growth, unemployment and inflation, including the \"dot plot\"",
+    timeET: "14:00",
+  }));
+}
+
 function fomcEvents(): CalendarEvent[] {
   return FOMC_MEETINGS.map(([start, end, sep]) => ({
     date: end,
@@ -92,7 +130,7 @@ export async function getCalendar(): Promise<{
   missingKey: boolean;
 }> {
   const today = todayET();
-  const events = fomcEvents();
+  const events = [...fomcEvents(), ...sepEvents(), ...ismEvents()];
   const errors: string[] = [];
   const missingKey = !hasFredKey();
 
@@ -118,8 +156,9 @@ export async function getCalendar(): Promise<{
     });
   }
 
+  const nowMinutes = minutesNowET();
   const upcoming = events
-    .filter((e) => e.date >= today)
+    .filter((e) => !hasHappened(e, today, nowMinutes))
     .sort((a, b) => a.date.localeCompare(b.date) || a.type.localeCompare(b.type));
 
   return { events: upcoming, errors, missingKey };
@@ -137,6 +176,14 @@ function minutesNowET() {
   return get("hour") * 60 + get("minute");
 }
 
+// True once an event's release time (plus 30 minutes) has passed, in New York time.
+function hasHappened(e: CalendarEvent, today: string, nowMinutes: number) {
+  if (e.date < today) return true;
+  if (e.date > today) return false;
+  const [h, m] = e.timeET.split(":").map(Number);
+  return nowMinutes >= h * 60 + m + 30;
+}
+
 // The most recent event of each type that has already happened (newest first).
 // Same-day releases count once their time has passed, plus a short buffer for
 // FRED to publish the new numbers.
@@ -144,7 +191,7 @@ export async function getRecentEvents(): Promise<CalendarEvent[]> {
   const today = todayET();
   const nowMinutes = minutesNowET();
   const from = new Date(Date.now() - 150 * 86_400_000).toISOString().slice(0, 10);
-  const events = fomcEvents();
+  const events = [...fomcEvents(), ...sepEvents(), ...ismEvents()];
 
   if (hasFredKey()) {
     const results = await Promise.allSettled(FRED_RELEASES.map((r) => getReleaseDates(r.id, from)));
@@ -157,12 +204,7 @@ export async function getRecentEvents(): Promise<CalendarEvent[]> {
     });
   }
 
-  const happened = (e: CalendarEvent) => {
-    if (e.date < today) return true;
-    if (e.date > today) return false;
-    const [h, m] = e.timeET.split(":").map(Number);
-    return nowMinutes >= h * 60 + m + 30;
-  };
+  const happened = (e: CalendarEvent) => hasHappened(e, today, nowMinutes);
 
   const latest = new Map<EventType, CalendarEvent>();
   for (const e of events.filter(happened)) {

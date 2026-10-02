@@ -112,6 +112,33 @@ async function summarize(
       };
     }
 
+    case "SEP": {
+      // Fed officials' median projections, one value per year (FRED, from the latest SEP).
+      const ids = ["FEDTARMD", "GDPC1MD", "UNRATEMD", "PCECTPIMD"];
+      const series = await Promise.all(ids.map((id) => getSeries(id, { start: "2000-01-01" })));
+      const year = date.slice(0, 4);
+      const [rate, gdp, unemployment, pce] = series.map((pts) => pts.find((p) => p.date.startsWith(year)));
+      if (!rate) return null;
+      const parts = [
+        `${pct(rate.value, 1)} for the federal funds rate`,
+        gdp && `${pct(gdp.value, 1)} real GDP growth`,
+        unemployment && `${pct(unemployment.value, 1)} unemployment`,
+        pce && `${pct(pce.value, 1)} PCE inflation`,
+      ].filter(Boolean) as string[];
+      const list = parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts.at(-1)}` : parts[0];
+      return {
+        type, date, title: "Summary of Economic Projections", href: "/dashboard#chart-fedfunds",
+        headline: pct(rate.value, 1), headlineLabel: `Median fed funds projection, end of ${year}`,
+        summary:
+          `The Federal Open Market Committee (FOMC) released its Summary of Economic Projections (SEP), ` +
+          `with median projections for the end of ${year} of ${list}.`,
+      };
+    }
+
+    case "ISM":
+      // ISM data isn't available from FRED, so there's no automatic summary.
+      return null;
+
     case "FOMC": {
       const [upper, lower] = await Promise.all([
         getSeries("DFEDTARU", { start: START }),
@@ -144,7 +171,8 @@ async function summarize(
 // Anything whose numbers can't be loaded is left out.
 export async function getLatestReleases(): Promise<LatestRelease[]> {
   if (!hasFredKey()) return [];
-  const recent = await getRecentEvents();
+  // ISM releases have no data source for a summary, so they're skipped here.
+  const recent = (await getRecentEvents()).filter((e) => e.type !== "ISM");
   const latestDate = recent[0]?.date;
   const sameDay = recent.filter((e) => e.date === latestDate);
   const results = await Promise.allSettled(sameDay.map((e) => summarize(e.type, e.date, e.meetingStart)));

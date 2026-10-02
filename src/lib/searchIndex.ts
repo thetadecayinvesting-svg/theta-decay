@@ -58,6 +58,14 @@ const EVENT_SEARCH: Record<EventType, { title: string; keywords: string[] }> = {
     title: "FOMC Rate Decision",
     keywords: ["fomc", "fed", "federal reserve", "rate decision", "interest rates", "rates", "powell", "fed meeting"],
   },
+  SEP: {
+    title: "Summary of Economic Projections",
+    keywords: ["sep", "summary of economic projections", "dot plot", "fed projections", "fed forecasts", "fomc", "fed"],
+  },
+  ISM: {
+    title: "ISM Manufacturing & Services PMI",
+    keywords: ["ism", "pmi", "purchasing managers index", "manufacturing", "services", "ism manufacturing", "ism services"],
+  },
   CPI: {
     title: "CPI Report",
     keywords: ["cpi", "inflation", "consumer price index", "prices"],
