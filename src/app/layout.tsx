@@ -37,6 +37,10 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
+  // Search engine ownership checks (public codes).
+  verification: {
+    other: { "msvalidate.01": "F05DD3B7EDC36212395380C0D9FA774E" }, // Bing Webmaster Tools
+  },
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
