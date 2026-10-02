@@ -17,7 +17,8 @@ import { useSettings } from "./SettingsProvider";
 const FEED_WEBCAL = `${SITE_URL.replace(/^https:/, "webcal:")}/calendar.ics`;
 const FEED_GOOGLE = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(FEED_WEBCAL)}`;
 
-const TYPES = Object.keys(EVENT_META) as EventType[];
+// SEP is shown with its FOMC meeting, so it has no filter of its own.
+const TYPES = (Object.keys(EVENT_META) as EventType[]).filter((t) => t !== "SEP");
 
 function parse(date: string) {
   return new Date(`${date}T12:00:00Z`);
@@ -53,10 +54,11 @@ function HighImpactBadge() {
   );
 }
 
-function Tags({ type }: { type: EventType }) {
+function Tags({ type, withSep }: { type: EventType; withSep?: boolean }) {
   return (
     <>
       <TypeTag type={type} />
+      {withSep && <TypeTag type="SEP" />}
       {EVENT_META[type].highImpact && <HighImpactBadge />}
     </>
   );
@@ -176,7 +178,7 @@ export default function CalendarView({
                   <h2 className="mr-1 text-xl font-semibold tracking-tight sm:text-2xl">
                     {event.title}
                   </h2>
-                  <Tags type={event.type} />
+                  <Tags type={event.type} withSep={event.withSep} />
                 </div>
                 <p className="mt-1.5 text-sm text-muted">{event.detail}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -217,7 +219,7 @@ export default function CalendarView({
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="mr-1 font-medium">{event.title}</span>
-                      <Tags type={event.type} />
+                      <Tags type={event.type} withSep={event.withSep} />
                     </div>
                     <p className="mt-0.5 truncate text-sm text-muted">{event.detail}</p>
                   </div>

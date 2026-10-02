@@ -116,13 +116,17 @@ export function buildSearchIndex(upcoming: CalendarEvent[]): SearchItem[] {
   ];
 
   const calendar: SearchItem[] = (Object.keys(EVENT_SEARCH) as EventType[]).map((type) => {
-    const next = upcoming.find((e) => e.type === type);
+    // SEP comes out with an FOMC meeting, so link to that meeting.
+    const next =
+      type === "SEP"
+        ? upcoming.find((e) => e.type === "FOMC" && e.withSep)
+        : upcoming.find((e) => e.type === type);
     return {
       id: `event-${type}`,
       group: "Calendar",
       title: EVENT_SEARCH[type].title,
       subtitle: next ? `Next: ${shortDate(next.date)}` : "Economic calendar",
-      href: next ? `/#event-${next.date}-${type}` : "/",
+      href: next ? `/#event-${next.date}-${next.type}` : "/",
       keywords: EVENT_SEARCH[type].keywords,
     };
   });

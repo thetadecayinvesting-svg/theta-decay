@@ -108,6 +108,7 @@ function fomcEvents(): CalendarEvent[] {
   return FOMC_MEETINGS.map(([start, end, sep]) => ({
     date: end,
     meetingStart: start,
+    withSep: sep,
     type: "FOMC",
     title: "FOMC Rate Decision",
     detail: `Two-day meeting ${formatShortRange(start, end)}${
@@ -130,7 +131,8 @@ export async function getCalendar(): Promise<{
   missingKey: boolean;
 }> {
   const today = todayET();
-  const events = [...fomcEvents(), ...sepEvents(), ...ismEvents()];
+  // SEP releases are shown as part of their FOMC meeting (withSep), not separately.
+  const events = [...fomcEvents(), ...ismEvents()];
   const errors: string[] = [];
   const missingKey = !hasFredKey();
 

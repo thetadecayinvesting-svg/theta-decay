@@ -9,6 +9,7 @@ export type CalendarEvent = {
   detail: string;
   timeET: string; // official release time, 24-hour Eastern Time, e.g. "08:30"
   meetingStart?: string; // FOMC only: first day of the two-day meeting
+  withSep?: boolean; // FOMC only: the Summary of Economic Projections comes out the same day
 };
 
 // highImpact events get the violet "High impact" badge on the calendar.
