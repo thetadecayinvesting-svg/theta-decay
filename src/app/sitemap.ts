@@ -1,14 +1,12 @@
 import type { MetadataRoute } from "next";
-import { PAGES } from "@/lib/pages";
-import { SITE_URL } from "@/lib/site";
+import { PUBLIC_PATHS, siteUrl } from "@/lib/siteUrls";
 
-// /sitemap.xml: every main page, so search engines can find them all.
+// /sitemap.xml: every public page, so search engines can find them all.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const pages = [...PAGES, { href: "/privacy" }];
-  return pages.map((page) => ({
-    url: `${SITE_URL}${page.href === "/" ? "" : page.href}`,
+  return PUBLIC_PATHS.map((path) => ({
+    url: siteUrl(path),
     lastModified: new Date(),
-    changeFrequency: ["/newsletter", "/about", "/privacy"].includes(page.href) ? "monthly" : "daily",
-    priority: page.href === "/" ? 1 : 0.8,
+    changeFrequency: ["/newsletter", "/about", "/privacy"].includes(path) ? "monthly" : "daily",
+    priority: path === "/" ? 1 : 0.8,
   }));
 }
