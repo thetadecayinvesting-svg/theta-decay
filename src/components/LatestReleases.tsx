@@ -2,7 +2,7 @@ import Link from "next/link";
 import { EVENT_META } from "@/lib/events";
 import type { LatestRelease } from "@/lib/latest";
 
-// "Latest results": the most recent Fed decision or data release — or all of
+// "Latest releases": the most recent Fed decision or data release — or all of
 // them, if several came out on the same day — summarized in plain English.
 export default function LatestReleases({ releases }: { releases: LatestRelease[] }) {
   if (releases.length === 0) return null;
@@ -17,7 +17,7 @@ export default function LatestReleases({ releases }: { releases: LatestRelease[]
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight">Latest results</h2>
+        <h2 className="text-xl font-semibold tracking-tight">Latest releases</h2>
         <p className="mt-1 text-sm text-muted">
           What the most recent {releases.length > 1 ? "reports" : "report"} showed · {date}
         </p>
