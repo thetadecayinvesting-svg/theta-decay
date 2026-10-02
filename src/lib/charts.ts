@@ -163,6 +163,23 @@ export const CHARTS: ChartConfig[] = [
     period: "month",
     lines: [{ key: "sentiment", fredId: "UMCSENT", label: "Consumer sentiment" }],
   },
+  {
+    key: "fedsurveys",
+    section: "risk",
+    title: "Regional Fed Manufacturing Surveys",
+    keywords: ["pmi", "purchasing managers index", "manufacturing", "philly fed", "philadelphia fed", "empire state", "new york fed", "business conditions", "ism"],
+    description: "Manufacturers reporting better vs. worse business conditions (diffusion index), monthly",
+    insight:
+      "Readings above zero mean more manufacturers see business improving than worsening; a fall below zero often signals a manufacturing slowdown. These PMI-style surveys come out before the ISM PMI each month.",
+    note: "PMI-style surveys by the Philadelphia and New York Federal Reserve Banks; not the ISM PMI.",
+    unit: "",
+    period: "month",
+    zeroLine: true,
+    lines: [
+      { key: "philly", fredId: "GACDFSA066MSFRBPHI", label: "Philadelphia Fed" },
+      { key: "empire", fredId: "GACDISA066MSFRBNY", label: "New York (Empire State)" },
+    ],
+  },
 ];
 
 // The "Details" panel under a chart line (source, release, units, notes…),
