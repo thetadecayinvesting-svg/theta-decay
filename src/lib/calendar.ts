@@ -215,3 +215,25 @@ export async function getRecentEvents(): Promise<CalendarEvent[]> {
   }
   return [...latest.values()].sort((a, b) => b.date.localeCompare(a.date));
 }
+
+// Every release of one type from January 1 of this year onward (past and upcoming),
+// for the release-date pages. `happened` marks the ones already out.
+export async function getSchedule(type: EventType): Promise<(CalendarEvent & { happened: boolean })[]> {
+  const today = todayET();
+  const nowMinutes = minutesNowET();
+  const from = `${today.slice(0, 4)}-01-01`;
+  let events: CalendarEvent[];
+  if (type === "FOMC") events = fomcEvents();
+  else if (type === "SEP") events = sepEvents();
+  else if (type === "ISM") events = ismEvents();
+  else {
+    const release = FRED_RELEASES.find((r) => r.type === type);
+    if (!release || !hasFredKey()) return [];
+    const dates = await getReleaseDates(release.id, from);
+    events = dates.map((date) => ({ date, type, title: release.title, detail: release.detail, timeET: "08:30" }));
+  }
+  return events
+    .filter((e) => e.date >= from)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((e) => ({ ...e, happened: hasHappened(e, today, nowMinutes) }));
+}

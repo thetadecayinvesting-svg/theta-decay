@@ -83,6 +83,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             Statistics; FOMC schedule from
             federalreserve.gov. For information only — not investment advice.
             <nav aria-label="Footer" className="mt-2 flex gap-4">
+              <Link href="/release-dates" className="hover:text-primary">Release Dates</Link>
               <Link href="/about" className="hover:text-primary">About</Link>
               <Link href="/privacy" className="hover:text-primary">Privacy Policy</Link>
             </nav>

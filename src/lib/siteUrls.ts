@@ -3,11 +3,14 @@
 
 import { LEARN_TOPICS, learnHref } from "./learnTopics";
 import { PAGES } from "./pages";
+import { RELEASE_PAGES, releaseHref } from "./releasePages";
 import { SITE_URL } from "./site";
 
 export const PUBLIC_PATHS = [
   ...PAGES.map((p) => p.href),
   ...LEARN_TOPICS.map((t) => learnHref(t.slug)),
+  "/release-dates",
+  ...RELEASE_PAGES.map((p) => releaseHref(p.slug)),
   "/privacy",
 ];
 

@@ -8,6 +8,7 @@ import {
   type CalendarEvent,
   type EventType,
 } from "@/lib/events";
+import { releaseHref, releasePageFor } from "@/lib/releasePages";
 import { TIME_ZONES } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
 import { easternToInstant, formatReleaseTime } from "@/lib/timezone";
@@ -188,6 +189,17 @@ export default function CalendarView({
                   <Link href={EVENT_GUIDES[event.type].href} className="font-medium text-accent hover:text-accent-hover">
                     Learn more →
                   </Link>
+                  {releasePageFor(event.type) && (
+                    <>
+                      {" · "}
+                      <Link
+                        href={releaseHref(releasePageFor(event.type)!.slug)}
+                        className="font-medium text-accent hover:text-accent-hover"
+                      >
+                        All dates →
+                      </Link>
+                    </>
+                  )}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
                   <p className="num text-sm text-muted">

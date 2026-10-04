@@ -7,6 +7,7 @@ import { yearsAgo } from "@/lib/chartFormat";
 import { GUIDES } from "@/lib/learnContent";
 import { loadStat } from "@/lib/learnStats";
 import { LEARN_TOPICS, learnHref } from "@/lib/learnTopics";
+import { releaseHref, releasePageFor } from "@/lib/releasePages";
 import { CHARTS, getDashboardData } from "@/lib/series";
 import { jsonLdScript, pageMetadata } from "@/lib/site";
 
@@ -44,6 +45,7 @@ export default async function LearnGuidePage({ params }: PageProps<"/learn/[slug
   ]);
   const chart = charts.find((c) => c.key === topic.chartKey);
   const next = topic.eventType ? events.find((e) => e.type === topic.eventType) : undefined;
+  const releasePage = topic.eventType ? releasePageFor(topic.eventType) : undefined;
   const tenYearsAgo = yearsAgo(10);
 
   const faqs = guide.faqs.map((f) => ({
@@ -83,12 +85,13 @@ export default async function LearnGuidePage({ params }: PageProps<"/learn/[slug
         )}
         {topic.eventType && (
           <Link
-            href={next ? `/#event-${next.date}-${next.type}` : "/"}
+            href={releasePage ? releaseHref(releasePage.slug) : "/"}
             className="rounded-lg border border-border border-l-4 border-l-accent bg-surface p-5 transition-colors hover:bg-surface-hover"
           >
             <div className="text-xs text-muted">Next release</div>
             <div className="mt-1 text-lg font-semibold">{next ? shortDate(next.date) : "See calendar"}</div>
             <div className="text-xs text-muted">{next && guide.releaseTime ? guide.releaseTime : ""}</div>
+            <div className="mt-2 text-xs font-medium text-accent">All release dates →</div>
           </Link>
         )}
       </section>

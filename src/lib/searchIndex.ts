@@ -7,6 +7,7 @@ import { CHARTS } from "./charts";
 import type { CalendarEvent, EventType } from "./events";
 import { LEARN_TOPICS, learnHref } from "./learnTopics";
 import { PAGES } from "./pages";
+import { RELEASE_PAGES, releaseHref } from "./releasePages";
 
 export type SearchGroup = "Charts" | "Calendar" | "Pages";
 export const SEARCH_GROUPS: SearchGroup[] = ["Charts", "Calendar", "Pages"];
@@ -151,7 +152,27 @@ export function buildSearchIndex(upcoming: CalendarEvent[]): SearchItem[] {
     keywords: t.keywords,
   }));
 
-  return [...charts, ...calendar, ...pages, ...guides];
+  // Release-date pages ("cpi release date" → the CPI schedule).
+  const releaseDates: SearchItem[] = [
+    ...RELEASE_PAGES.map((p) => ({
+      id: `release-${p.slug}`,
+      group: "Pages" as const,
+      title: `${p.name} ${p.type === "FOMC" ? "Meeting" : "Release"} Dates`,
+      subtitle: `Full schedule · ${p.publisher}`,
+      href: releaseHref(p.slug),
+      keywords: [...p.keywords, "release dates", "schedule"],
+    })),
+    {
+      id: "release-all",
+      group: "Pages" as const,
+      title: "All Release Dates",
+      subtitle: "Schedules for CPI, FOMC, jobs, GDP, PCE and PMI",
+      href: "/release-dates",
+      keywords: ["release dates", "schedule", "economic calendar", "data release schedule"],
+    },
+  ];
+
+  return [...charts, ...calendar, ...pages, ...guides, ...releaseDates];
 }
 
 const normalize = (s: string) =>
