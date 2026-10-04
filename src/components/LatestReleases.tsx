@@ -49,9 +49,13 @@ export default function LatestReleases({ releases }: { releases: LatestRelease[]
 
             <Link
               href={r.href}
-              className="mt-4 inline-block text-sm font-medium text-accent hover:text-accent-hover"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover"
             >
-              See the chart →
+              <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+                <path d="M3.5 3.5v13h13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="m6.5 12 3-3.5 2.5 2 4-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              See the chart
             </Link>
           </article>
         ))}
