@@ -104,6 +104,12 @@ function ChartTooltip({
   );
 }
 
+// Same look as the "Add to calendar" button; highlighted while its panel is open.
+const actionButton = (active: boolean) =>
+  `inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover ${
+    active ? "bg-surface-hover" : ""
+  }`;
+
 export default function ChartCard({
   chart,
   rows,
@@ -241,7 +247,7 @@ export default function ChartCard({
       )}
 
       {!chart.error && rows.length > 0 && (
-        <div className="mt-4 flex items-center justify-between gap-4 text-xs text-muted">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 text-xs text-muted">
           <span>
             {sourceLabel(chart.lines)}
             {onRemove && (
@@ -254,33 +260,40 @@ export default function ChartCard({
             )}
             {chart.note && <> · {chart.note}</>}
           </span>
-          <div className="flex shrink-0 items-center gap-4">
-          {explainer && (
+          <div className="flex shrink-0 items-center gap-2">
+            {explainer && (
+              <button
+                onClick={() => setShowExplainer((v) => !v)}
+                aria-expanded={showExplainer}
+                className={actionButton(showExplainer)}
+              >
+                <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+                  <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M8.2 8a1.9 1.9 0 0 1 3.6.8c0 1.2-1.8 1.5-1.8 2.7M10 14h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                What is this?
+              </button>
+            )}
             <button
-              onClick={() => setShowExplainer((v) => !v)}
-              aria-expanded={showExplainer}
-              className="inline-flex items-center gap-1 font-medium text-accent hover:text-accent-hover"
+              onClick={() => setShowDetails((v) => !v)}
+              aria-expanded={showDetails}
+              aria-controls={detailsId}
+              className={actionButton(showDetails)}
             >
-              <span aria-hidden className="grid h-4 w-4 place-items-center rounded-full border border-current text-[10px] leading-none">?</span>
-              What is this?
+              <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+                <rect x="3.5" y="3.5" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M7 7.5h6M7 10h6M7 12.5h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+              Details
+              <svg
+                aria-hidden
+                viewBox="0 0 20 20"
+                className={`h-3.5 w-3.5 transition-transform ${showDetails ? "rotate-180" : ""}`}
+                fill="none"
+              >
+                <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
-          )}
-          <button
-            onClick={() => setShowDetails((v) => !v)}
-            aria-expanded={showDetails}
-            aria-controls={detailsId}
-            className="inline-flex shrink-0 items-center gap-1 font-medium text-accent hover:text-accent-hover"
-          >
-            Details
-            <svg
-              aria-hidden
-              viewBox="0 0 20 20"
-              className={`h-3.5 w-3.5 transition-transform ${showDetails ? "rotate-180" : ""}`}
-              fill="none"
-            >
-              <path d="m5 7.5 5 5 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
           </div>
         </div>
       )}
