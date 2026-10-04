@@ -29,7 +29,7 @@ export async function loadStat(stat: GuideStat, start: string): Promise<LoadedSt
       const upper = (await getSeries(stat.upperFredId, { start })).at(-1);
       value = upper ? `${last.value.toFixed(2)}–${upper.value.toFixed(2)}%` : `${last.value.toFixed(2)}%`;
     } else if (stat.format === "jobsK") {
-      value = `${last.value >= 0 ? "+" : "−"}${Math.round(Math.abs(last.value))}K`;
+      value = `${last.value >= 0 ? "+" : "−"}${(Math.round(Math.abs(last.value)) * 1000).toLocaleString("en-US")}`;
     } else if (stat.format === "pct1") {
       value = `${last.value.toFixed(1)}%`;
     } else if (stat.format === "pct2") {
