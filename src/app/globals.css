@@ -10,16 +10,16 @@
 
   /* ---- Base -------------------------------------------------------- */
   --bg: #000000; /* page background */
-  --surface: #1a1729; /* cards, panels, navigation bar, tooltips */
-  --border: #2a2640; /* borders and dividers */
-  --surface-hover: #2a2640; /* row/button hover */
+  --surface: #17151f; /* cards, panels, navigation bar, tooltips */
+  --border: #2a2735; /* borders and dividers */
+  --surface-hover: #25222f; /* row/button hover */
   --text-primary: #e6eaf2; /* main text */
   --text-muted: #9a96b0; /* labels, dates, footnotes */
 
   /* ---- Accent: use sparingly (buttons, links, active items) ------- */
   --accent: #8b7cf6;
   --accent-hover: #a597fa; /* also the text color on --accent-soft */
-  --accent-soft: rgb(139 124 246 / 0.15); /* highlighted rows, badges */
+  --accent-soft: rgb(139 124 246 / 0.11); /* highlighted rows, badges */
   --on-accent: #0f0d1a; /* text on a solid violet fill */
 
   /* ---- Market data only: never for branding or decoration --------- */

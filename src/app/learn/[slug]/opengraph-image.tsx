@@ -22,8 +22,8 @@ export function generateStaticParams() {
 }
 
 const BG = "#000000";
-const SURFACE = "#1a1729";
-const BORDER = "#2e2a45";
+const SURFACE = "#17151f";
+const BORDER = "#2a2735";
 const TEXT = "#ece9f8";
 const MUTED = "#9a96b0";
 const ACCENT = "#8b7cf6";
