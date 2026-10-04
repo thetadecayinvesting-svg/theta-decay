@@ -91,7 +91,7 @@ async function summarize(
       const count = Math.round(Math.abs(jobs.value) * 1000).toLocaleString("en-US");
       return {
         type, date, title: "Jobs Report", href: "/dashboard#chart-unrate",
-        headline: `${jobs.value >= 0 ? "+" : "−"}${Math.round(Math.abs(jobs.value))}K`,
+        headline: `${jobs.value >= 0 ? "+" : "−"}${(Math.round(Math.abs(jobs.value)) * 1000).toLocaleString("en-US")}`,
         headlineLabel: `Jobs added, ${monthName(jobs.date)}`,
         summary:
           `The Bureau of Labor Statistics reported that total nonfarm payroll employment ` +
