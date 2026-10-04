@@ -9,7 +9,7 @@
   color-scheme: dark;
 
   /* ---- Base -------------------------------------------------------- */
-  --bg: #0f0d1a; /* page background */
+  --bg: #000000; /* page background */
   --surface: #1a1729; /* cards, panels, navigation bar, tooltips */
   --border: #2a2640; /* borders and dividers */
   --surface-hover: #2a2640; /* row/button hover */

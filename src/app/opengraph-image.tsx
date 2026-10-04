@@ -13,7 +13,7 @@ export const alt = `${SITE_NAME} — ${SITE_TAGLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const BG = "#0f0d1a";
+const BG = "#000000";
 const SURFACE = "#1a1729";
 const BORDER = "#2e2a45";
 const TEXT = "#ece9f8";

@@ -21,7 +21,7 @@ export function generateStaticParams() {
   return LEARN_TOPICS.map((t) => ({ slug: t.slug }));
 }
 
-const BG = "#0f0d1a";
+const BG = "#000000";
 const SURFACE = "#1a1729";
 const BORDER = "#2e2a45";
 const TEXT = "#ece9f8";
