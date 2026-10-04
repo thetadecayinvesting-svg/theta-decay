@@ -129,7 +129,7 @@ export default function CalendarView({
         <span className="text-primary">
           {TIME_ZONES.find((z) => z.id === settings.timeZone)?.label ?? settings.timeZone}
         </span>
-        . Change it in Settings (the gear icon, top right).
+        . Change it in Settings.
         </p>
         <p className="mt-2 text-sm text-muted">
           Subscribe to every event, auto-updating:{" "}
