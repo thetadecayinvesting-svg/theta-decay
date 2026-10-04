@@ -57,6 +57,25 @@ function HighImpactBadge() {
   );
 }
 
+// Matches the "Add to calendar" button next to it.
+const ACTION_BUTTON =
+  "inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover";
+
+const BookIcon = () => (
+  <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+    <path d="M10 5.5C8.5 4.3 6.3 4 3.5 4v11.5c2.8 0 5 .3 6.5 1.5m0-11.5c1.5-1.2 3.7-1.5 6.5-1.5v11.5c-2.8 0-5 .3-6.5 1.5m0-11.5V17" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+  </svg>
+);
+
+const ListIcon = () => (
+  <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+    <path d="M7.5 5.5h9M7.5 10h9M7.5 14.5h9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <circle cx="4" cy="5.5" r="1" fill="currentColor" />
+    <circle cx="4" cy="10" r="1" fill="currentColor" />
+    <circle cx="4" cy="14.5" r="1" fill="currentColor" />
+  </svg>
+);
+
 function Tags({ type, withSep }: { type: EventType; withSep?: boolean }) {
   return (
     <>
@@ -185,27 +204,23 @@ export default function CalendarView({
                 </div>
                 <p className="mt-1.5 text-sm text-muted">{event.detail}</p>
                 <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
-                  {EVENT_GUIDES[event.type].summary}{" "}
-                  <Link href={EVENT_GUIDES[event.type].href} className="font-medium text-accent hover:text-accent-hover">
-                    Learn more →
-                  </Link>
-                  {releasePageFor(event.type) && (
-                    <>
-                      {" · "}
-                      <Link
-                        href={releaseHref(releasePageFor(event.type)!.slug)}
-                        className="font-medium text-accent hover:text-accent-hover"
-                      >
-                        All dates →
-                      </Link>
-                    </>
-                  )}
+                  {EVENT_GUIDES[event.type].summary}
                 </p>
-                <div className="mt-2 flex flex-wrap items-center gap-3">
-                  <p className="num text-sm text-muted">
+                <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <p className="num mr-1 text-sm text-muted">
                     <ReleaseTime event={event} timeZone={settings.timeZone} />
                   </p>
                   <AddToCalendar event={event} />
+                  <Link href={EVENT_GUIDES[event.type].href} className={ACTION_BUTTON}>
+                    <BookIcon />
+                    Learn more
+                  </Link>
+                  {releasePageFor(event.type) && (
+                    <Link href={releaseHref(releasePageFor(event.type)!.slug)} className={ACTION_BUTTON}>
+                      <ListIcon />
+                      All release dates
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}
