@@ -119,7 +119,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
 
       <div>
         <p className="text-xs font-medium uppercase tracking-wider text-accent">
-          <Link href="/" className="hover:text-accent-hover">Calendar</Link> ·{" "}
+          <Link href="/" className="hover:text-accent-hover">Economic Calendar</Link> ·{" "}
           <Link href="/release-dates" className="hover:text-accent-hover">Release dates</Link>
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">{withYear(page.h1)}</h1>

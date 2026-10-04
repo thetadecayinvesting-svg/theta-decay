@@ -10,7 +10,7 @@ export type SitePage = {
 export const PAGES: SitePage[] = [
   {
     href: "/",
-    label: "Calendar",
+    label: "Economic Calendar",
     description: "Upcoming Fed, inflation, jobs and GDP dates",
     keywords: ["calendar", "economic calendar", "schedule", "events", "dates", "releases", "home", "upcoming"],
   },

@@ -42,7 +42,7 @@ export default async function Home() {
         }}
       />
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">Calendar</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Economic Calendar</h1>
         <p className="mt-2 max-w-2xl text-muted">
           The market-moving dates ahead: Fed rate decisions, inflation prints,
           jobs reports and GDP.
