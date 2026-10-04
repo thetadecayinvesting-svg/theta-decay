@@ -31,7 +31,7 @@ export default function LearnPage() {
             <span className="text-xs font-medium uppercase tracking-wider text-accent">{t.category}</span>
             <span className="mt-2 font-semibold">{t.title}</span>
             <span className="mt-1 flex-1 text-sm text-muted">{t.short}</span>
-            <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary">
+            <span className="mt-4 inline-flex w-fit items-center gap-1.5 text-sm font-medium text-accent">
               <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
                 <path d="M10 5.5C8.5 4.3 6.3 4 3.5 4v11.5c2.8 0 5 .3 6.5 1.5m0-11.5c1.5-1.2 3.7-1.5 6.5-1.5v11.5c-2.8 0-5 .3-6.5 1.5m0-11.5V17" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
               </svg>
