@@ -24,7 +24,7 @@ export type GuideContent = {
 
 export const GUIDES: Record<string, GuideContent> = {
   cpi: {
-    metaTitle: "What Is CPI? The Consumer Price Index Explained",
+    metaTitle: "What Is CPI? Consumer Price Index Explained",
     metaDescription:
       "What the Consumer Price Index (CPI) measures, why inflation moves markets, core vs. headline CPI, the latest reading and the next CPI release date.",
     h1: "What Is the Consumer Price Index (CPI)?",
@@ -77,7 +77,7 @@ export const GUIDES: Record<string, GuideContent> = {
   },
 
   pce: {
-    metaTitle: "What Is the PCE Price Index? The Fed's Inflation Gauge",
+    metaTitle: "What Is PCE? The Fed's Inflation Gauge",
     metaDescription:
       "What the personal consumption expenditures (PCE) price index measures, how it differs from CPI, why the Fed targets it, and the next PCE release date.",
     h1: "What Is the PCE Price Index?",
@@ -130,7 +130,7 @@ export const GUIDES: Record<string, GuideContent> = {
   },
 
   "jobs-report": {
-    metaTitle: "What Is the Jobs Report? Payrolls & Unemployment Explained",
+    metaTitle: "What Is the Jobs Report? Payrolls Explained",
     metaDescription:
       "How the monthly jobs report works: nonfarm payrolls, the unemployment rate, why markets react, and the next jobs report release date.",
     h1: "What Is the Jobs Report?",
@@ -212,7 +212,7 @@ export const GUIDES: Record<string, GuideContent> = {
   },
 
   "fed-funds-rate": {
-    metaTitle: "What Is the Fed Funds Rate? FOMC Meetings Explained",
+    metaTitle: "What Is the Fed Funds Rate? FOMC Explained",
     metaDescription:
       "How the Federal Reserve sets the federal funds rate, what happens at FOMC meetings, the dot plot, and the date of the next FOMC decision.",
     h1: "What Is the Federal Funds Rate?",
@@ -258,7 +258,7 @@ export const GUIDES: Record<string, GuideContent> = {
   },
 
   vix: {
-    metaTitle: "What Is the VIX? The Stock Market's Fear Gauge",
+    metaTitle: "What Is the VIX? The Market's Fear Gauge",
     metaDescription:
       "What the Cboe Volatility Index (VIX) measures, how to read its levels, why it's called the fear gauge, and today's latest reading.",
     h1: "What Is the VIX?",
@@ -289,7 +289,7 @@ export const GUIDES: Record<string, GuideContent> = {
   },
 
   pmi: {
-    metaTitle: "What Is the PMI? Purchasing Managers' Index Explained",
+    metaTitle: "What Is the PMI? Purchasing Managers' Index",
     metaDescription:
       "What the Purchasing Managers' Index (PMI) measures, how to read the 50 line, ISM manufacturing vs. services, and regional Fed manufacturing surveys.",
     h1: "What Is the Purchasing Managers' Index (PMI)?",
