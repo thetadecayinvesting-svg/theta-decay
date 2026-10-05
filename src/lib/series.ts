@@ -50,6 +50,9 @@ async function lineDetails(line: LineConfig): Promise<SeriesDetails | null> {
   }
 }
 
+// Details for a set of lines (used by the Markets page charts).
+export const getLinesDetails = (lines: LineConfig[]) => Promise.all(lines.map(lineDetails));
+
 // Turn FRED's series information into the Details panel contents.
 function detailsFromInfo(info: SeriesInfo, line: Pick<LineConfig, "units" | "frequency">): SeriesDetails {
   const units =

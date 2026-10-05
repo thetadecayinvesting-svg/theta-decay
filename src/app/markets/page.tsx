@@ -11,6 +11,7 @@ import { ASSETS } from "@/lib/assets";
 import { formatPeriod } from "@/lib/chartFormat";
 import { hasBeehiiv } from "@/lib/beehiiv";
 import { getMarketData } from "@/lib/markets";
+import { getLinesDetails, type LineConfig } from "@/lib/series";
 
 export const metadata: Metadata = pageMetadata({
   title: "Markets",
@@ -23,7 +24,17 @@ export const metadata: Metadata = pageMetadata({
 export const revalidate = 3600;
 
 export default async function MarketsPage() {
-  const { assets, fedFunds, missingKey } = await getMarketData();
+  const perfAssets = ASSETS.filter((a) => a.key !== "btc");
+  const perfLines: LineConfig[] = perfAssets.map((a) => ({ key: a.key, fredId: a.fredId, label: a.name }));
+  const spFedLines: LineConfig[] = [
+    { key: "sp", fredId: "SP500", label: "S&P 500" },
+    { key: "fed", fredId: "FEDFUNDS", label: "Fed funds rate" },
+  ];
+  const [{ assets, fedFunds, missingKey }, perfDetails, spFedDetails] = await Promise.all([
+    getMarketData(),
+    getLinesDetails(perfLines),
+    getLinesDetails(spFedLines),
+  ]);
   const sp = assets.find((a) => a.key === "sp500")?.points ?? [];
   const latestDates = assets.map((a) => a.points.at(-1)?.date).filter(Boolean) as string[];
   const errors = [
@@ -85,8 +96,8 @@ export default async function MarketsPage() {
         )}
 
         {/* Stock indices only: Bitcoin's swings would dwarf them on this chart. */}
-        <PerformanceChart assets={ASSETS.filter((a) => a.key !== "btc")} series={assets} />
-        <SpFedChart sp={sp} fed={fedFunds.points} />
+        <PerformanceChart assets={perfAssets} series={assets} details={{ lines: perfLines, details: perfDetails }} />
+        <SpFedChart sp={sp} fed={fedFunds.points} details={{ lines: spFedLines, details: spFedDetails }} />
       </section>
 
       {hasBeehiiv() && <NewsletterSignup source="markets" variant="inline" />}

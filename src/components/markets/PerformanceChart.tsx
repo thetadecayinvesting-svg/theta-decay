@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import ChartFrame from "./ChartFrame";
+import ChartFrame, { type ChartDetails } from "./ChartFrame";
 import { PctChange } from "./StatCards";
 import RangeToggle, { RANGES, type Range } from "../RangeToggle";
 import { useSettings } from "../SettingsProvider";
@@ -111,9 +111,11 @@ function PerfTooltip({
 export default function PerformanceChart({
   assets,
   series,
+  details,
 }: {
   assets: Asset[];
   series: AssetSeries[];
+  details: ChartDetails;
 }) {
   const { settings } = useSettings();
   // Until the visitor picks a range here, follow their default from Settings.
@@ -157,7 +159,7 @@ export default function PerformanceChart({
           <RangeToggle value={range} onChange={setPicked} />
         </div>
       }
-      insight="Starting every asset at 0% on the same day shows which one actually grew your money the most over the period, while the size of each line's swings shows how bumpy the ride was."
+      details={details}
       asOf={asOf ? formatPeriod(asOf, "day") : "—"}
       source={
         <>

@@ -149,7 +149,7 @@ export async function getSeriesInfo(seriesId: string): Promise<SeriesInfo> {
     units: s.units,
     frequency: s.frequency,
     seasonalAdjustment: s.seasonal_adjustment,
-    notes: (s.notes ?? "").trim(),
+    notes: (s.notes ?? "").replace(/<[/]?[a-z][^>]*>/gi, "").trim(), // some notes carry stray HTML tags
     lastUpdated: s.last_updated,
     release: release ? { name: release.name, link: release.link } : null,
     sources: sources.map((src) => ({ name: src.name, link: src.link })),

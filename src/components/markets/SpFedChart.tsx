@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import ChartFrame from "./ChartFrame";
+import ChartFrame, { type ChartDetails } from "./ChartFrame";
 import RangeToggle, { RANGES, type Range } from "../RangeToggle";
 import { useSettings } from "../SettingsProvider";
 import { formatPeriod, formatTick, lineColor, pickTicks, yearsAgo } from "@/lib/chartFormat";
@@ -55,7 +55,7 @@ function PanelTooltip({
 
 const axisTick = { fill: "var(--chart-axis)", fontSize: 11 };
 
-export default function SpFedChart({ sp, fed }: { sp: Point[]; fed: Point[] }) {
+export default function SpFedChart({ sp, fed, details }: { sp: Point[]; fed: Point[]; details: ChartDetails }) {
   const { settings } = useSettings();
   // Until the visitor picks a range here, follow their default from Settings.
   const [picked, setPicked] = useState<Range | null>(null);
@@ -73,7 +73,7 @@ export default function SpFedChart({ sp, fed }: { sp: Point[]; fed: Point[] }) {
       title="S&P 500 vs. Fed Funds Rate"
       description="Daily S&P 500 close (top) and the monthly average fed funds rate (bottom), on the same timeline"
       controls={<RangeToggle value={range} onChange={setPicked} />}
-      insight="Stocks often stumble while the Fed raises rates quickly, as in 2022, and tend to recover once hikes pause, because higher rates make borrowing costlier and safe bonds more attractive."
+      details={details}
       asOf={
         latestSp && latestFed
           ? `${formatPeriod(latestSp.date, "day")} (S&P 500), ${formatPeriod(latestFed.date, "month")} (fed funds)`
