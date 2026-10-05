@@ -239,13 +239,6 @@ export default function ChartCard({
         </div>
       )}
 
-      {chart.insight && (
-        <p className="mt-5 border-t border-border pt-4 text-sm leading-relaxed text-muted">
-          <span className="font-medium text-primary">What it means: </span>
-          {chart.insight}
-        </p>
-      )}
-
       {!chart.error && rows.length > 0 && (
         <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 text-xs text-muted">
           <span>

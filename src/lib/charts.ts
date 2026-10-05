@@ -19,7 +19,6 @@ export type ChartConfig = {
   title: string;
   keywords: string[]; // other names people search for (see the search bar)
   description: string;
-  insight?: string; // one sentence on what it means for investors
   note?: string; // caveat about the data itself
   unit: string; // shown after values, e.g. "%"
   prefix?: string; // shown before values, e.g. "$"
@@ -103,8 +102,6 @@ export const CHARTS: ChartConfig[] = [
     title: "VIX Volatility Index",
     keywords: ["volatility", "fear index", "fear gauge", "fear", "options", "vixcls"],
     description: "Expected 30-day S&P 500 volatility, daily close",
-    insight:
-      "A rising VIX means traders expect bigger stock swings ahead: readings above 30 usually signal fear, while readings below 15 signal calm or even complacency.",
     unit: "",
     period: "day",
     lines: [{ key: "vix", fredId: "VIXCLS", label: "VIX" }],
@@ -115,8 +112,6 @@ export const CHARTS: ChartConfig[] = [
     title: "Corporate Credit Spreads",
     keywords: ["credit spreads", "spreads", "high yield", "junk bonds", "investment grade", "corporate bonds", "oas", "credit risk"],
     description: "Extra yield over Treasuries (option-adjusted), daily close",
-    insight:
-      "Widening spreads mean lenders are demanding more pay to take on corporate risk, an early warning of economic stress that often shows up before stocks fall.",
     note: "FRED only provides the most recent 3 years of ICE BofA data.",
     unit: "%",
     period: "day",
@@ -131,8 +126,6 @@ export const CHARTS: ChartConfig[] = [
     title: "Baa Corporate Spread",
     keywords: ["credit spreads", "spreads", "baa", "moody's", "corporate bonds", "credit risk", "recession"],
     description: "Moody's Baa corporate bond yield minus 10-year Treasury, daily",
-    insight:
-      "This long-running gauge of corporate credit risk tends to jump heading into recessions, so a steady climb suggests the bond market sees trouble coming.",
     unit: "%",
     period: "day",
     lines: [{ key: "baa10y", fredId: "BAA10Y", label: "Baa − 10Y" }],
@@ -143,8 +136,6 @@ export const CHARTS: ChartConfig[] = [
     title: "Margin Debt",
     keywords: ["margin debt", "leverage", "borrowing", "finra", "brokers"],
     description: "Money investors have borrowed from brokers to buy securities, monthly",
-    insight:
-      "Rising margin debt means investors are borrowing more to bet on stocks, and record highs can signal overconfidence that turns into forced selling when markets drop.",
     unit: "T",
     prefix: "$",
     zeroBased: true,
@@ -157,8 +148,6 @@ export const CHARTS: ChartConfig[] = [
     title: "Consumer Sentiment",
     keywords: ["consumer sentiment", "sentiment", "consumer confidence", "confidence", "michigan", "umich", "umcsent"],
     description: "University of Michigan survey of how consumers feel about the economy, monthly",
-    insight:
-      "Falling sentiment means households feel worse about their finances and the economy, which can lead to weaker consumer spending, the biggest driver of U.S. growth.",
     unit: "",
     period: "month",
     lines: [{ key: "sentiment", fredId: "UMCSENT", label: "Consumer sentiment" }],
@@ -169,8 +158,6 @@ export const CHARTS: ChartConfig[] = [
     title: "Regional Fed Manufacturing Surveys",
     keywords: ["pmi", "purchasing managers index", "manufacturing", "philly fed", "philadelphia fed", "empire state", "new york fed", "business conditions", "ism"],
     description: "Manufacturers reporting better vs. worse business conditions (diffusion index), monthly",
-    insight:
-      "Readings above zero mean more manufacturers see business improving than worsening; a fall below zero often signals a manufacturing slowdown. These PMI-style surveys come out before the ISM PMI each month.",
     note: "PMI-style surveys by the Philadelphia and New York Federal Reserve Banks; not the ISM PMI.",
     unit: "",
     period: "month",
