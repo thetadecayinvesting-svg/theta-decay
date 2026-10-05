@@ -11,17 +11,28 @@ export type LatestRelease = {
   type: EventType;
   title: string;
   date: string; // when it was announced / released (YYYY-MM-DD)
-  headline: string; // e.g. "3.35%" or "+162K"
-  headlineLabel: string; // what the headline number is
+  headline?: string; // e.g. "3.35%" or "+162,000"; none when there's no data source (ISM)
+  headlineLabel?: string; // what the headline number is
   summary: string;
-  href: string; // chart with more detail
+  href: string; // chart with more detail, or the publisher's report
+  external?: boolean; // href is the publisher's own site
+  guideHref?: string; // Learn guide, shown as a second button
 };
+
+const ISM_REPORTS_URL = "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/";
 
 // Only the latest readings are needed; a short window keeps requests small.
 const START = new Date(Date.now() - 2 * 365 * 86_400_000).toISOString().slice(0, 10);
 
 const asDate = (d: string) => new Date(`${d}T12:00:00Z`);
 const monthName = (d: string) => asDate(d).toLocaleDateString("en-US", { month: "long", timeZone: "UTC" });
+// The first of the previous month, e.g. "2026-10-05" → "2026-09-01".
+function monthBefore(d: string) {
+  const x = asDate(d);
+  x.setUTCDate(1);
+  x.setUTCMonth(x.getUTCMonth() - 1);
+  return x.toISOString().slice(0, 10);
+}
 const quarterName = (d: string) => `Q${Math.floor((Number(d.slice(5, 7)) - 1) / 3) + 1} ${d.slice(0, 4)}`;
 const pct = (v: number, digits = 2) => `${v.toFixed(digits)}%`;
 // "increased 3.42%" / "decreased 0.40%" (uses the absolute value).
@@ -38,6 +49,7 @@ async function summarize(
   type: EventType,
   date: string,
   meetingStart: string | undefined,
+  title: string,
 ): Promise<LatestRelease | null> {
   switch (type) {
     case "CPI": {
@@ -135,9 +147,18 @@ async function summarize(
       };
     }
 
-    case "ISM":
-      // ISM data isn't available from FRED, so there's no automatic summary.
-      return null;
+    case "ISM": {
+      // ISM's numbers aren't on FRED, so the card announces the release and links to
+      // ISM's own report instead of showing a reading.
+      const services = title.includes("Services");
+      return {
+        type, date, title, href: ISM_REPORTS_URL, external: true, guideHref: "/learn/pmi",
+        summary:
+          `The Institute for Supply Management (ISM) released its ${services ? "Services" : "Manufacturing"} PMI for ${monthName(monthBefore(date))}, ` +
+          `a monthly survey of purchasing managers at U.S. ${services ? "service businesses" : "manufacturers"}. ` +
+          "A reading above 50 indicates expansion and below 50 indicates contraction.",
+      };
+    }
 
     case "FOMC": {
       const [upper, lower] = await Promise.all([
@@ -171,10 +192,9 @@ async function summarize(
 // Anything whose numbers can't be loaded is left out.
 export async function getLatestReleases(): Promise<LatestRelease[]> {
   if (!hasFredKey()) return [];
-  // ISM releases have no data source for a summary, so they're skipped here.
-  const recent = (await getRecentEvents()).filter((e) => e.type !== "ISM");
+  const recent = await getRecentEvents();
   const latestDate = recent[0]?.date;
   const sameDay = recent.filter((e) => e.date === latestDate);
-  const results = await Promise.allSettled(sameDay.map((e) => summarize(e.type, e.date, e.meetingStart)));
+  const results = await Promise.allSettled(sameDay.map((e) => summarize(e.type, e.date, e.meetingStart, e.title)));
   return results.flatMap((r) => (r.status === "fulfilled" && r.value ? [r.value] : []));
 }

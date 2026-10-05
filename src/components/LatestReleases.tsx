@@ -2,6 +2,9 @@ import Link from "next/link";
 import { EVENT_META } from "@/lib/events";
 import type { LatestRelease } from "@/lib/latest";
 
+const BUTTON =
+  "inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover";
+
 // "Latest releases": the most recent Fed decision or data release — or all of
 // them, if several came out on the same day — summarized in plain English.
 export default function LatestReleases({ releases }: { releases: LatestRelease[] }) {
@@ -39,24 +42,42 @@ export default function LatestReleases({ releases }: { releases: LatestRelease[]
 
             <div className="mt-3 flex flex-wrap items-end justify-between gap-x-8 gap-y-2">
               <h3 className="text-xl font-semibold tracking-tight">{r.title}</h3>
-              <div className="text-right">
-                <div className="num text-3xl font-semibold leading-tight">{r.headline}</div>
-                <div className="text-xs text-muted">{r.headlineLabel}</div>
-              </div>
+              {r.headline && (
+                <div className="text-right">
+                  <div className="num text-3xl font-semibold leading-tight">{r.headline}</div>
+                  <div className="text-xs text-muted">{r.headlineLabel}</div>
+                </div>
+              )}
             </div>
 
             <p className="mt-4 max-w-3xl leading-relaxed text-muted">{r.summary}</p>
 
-            <Link
-              href={r.href}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover"
-            >
-              <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
-                <path d="M3.5 3.5v13h13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="m6.5 12 3-3.5 2.5 2 4-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              See the chart
-            </Link>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {r.external ? (
+                <a href={r.href} target="_blank" rel="noopener noreferrer" className={BUTTON}>
+                  <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+                    <path d="M11 4h5v5M16 4l-7 7M14 11.5V16H4V6h4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Read ISM&apos;s report
+                </a>
+              ) : (
+                <Link href={r.href} className={BUTTON}>
+                  <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+                    <path d="M3.5 3.5v13h13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="m6.5 12 3-3.5 2.5 2 4-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  See the chart
+                </Link>
+              )}
+              {r.guideHref && (
+                <Link href={r.guideHref} className={BUTTON}>
+                  <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+                    <path d="M10 5.5C8.5 4.3 6.3 4 3.5 4v11.5c2.8 0 5 .3 6.5 1.5m0-11.5c1.5-1.2 3.7-1.5 6.5-1.5v11.5c-2.8 0-5 .3-6.5 1.5m0-11.5V17" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  </svg>
+                  Learn about the PMI
+                </Link>
+              )}
+            </div>
           </article>
         ))}
       </div>
