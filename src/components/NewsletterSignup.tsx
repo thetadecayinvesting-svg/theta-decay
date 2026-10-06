@@ -12,9 +12,13 @@ const initialState: SubscribeState = { status: "idle", message: "" };
 export default function NewsletterSignup({
   source,
   variant = "card",
+  heading,
+  blurb,
 }: {
   source: string; // which page the signup came from, for beehiiv stats
   variant?: "card" | "inline";
+  heading?: string; // inline only: replaces the default heading
+  blurb?: string; // inline only: replaces the default description
 }) {
   const [state, formAction, pending] = useActionState(subscribe, initialState);
   const id = useId();
@@ -74,9 +78,9 @@ export default function NewsletterSignup({
       <section className="rounded-lg border border-border bg-surface p-6">
         <div className="gap-8 md:flex md:items-center">
           <div className="md:w-2/5">
-            <h2 className="font-semibold tracking-tight">Get {NEWSLETTER_NAME} in your inbox</h2>
+            <h2 className="font-semibold tracking-tight">{heading ?? `Get ${NEWSLETTER_NAME} in your inbox`}</h2>
             <p className="mt-1 text-sm text-muted">
-              The dates and data that move markets, in plain English.{" "}
+              {blurb ?? "The dates and data that move markets, in plain English."}{" "}
               <Link href="/newsletter" className="text-accent hover:text-accent-hover">
                 Learn more
               </Link>

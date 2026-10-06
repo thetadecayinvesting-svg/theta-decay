@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ChartCard from "@/components/ChartCard";
+import NewsletterSignup from "@/components/NewsletterSignup";
+import { hasBeehiiv } from "@/lib/beehiiv";
 import { getCalendar } from "@/lib/calendar";
 import { yearsAgo } from "@/lib/chartFormat";
 import { GUIDES } from "@/lib/learnContent";
@@ -123,6 +125,15 @@ export default async function LearnGuidePage({ params }: PageProps<"/learn/[slug
           ))}
         </div>
       </section>
+
+      {hasBeehiiv() && (
+        <NewsletterSignup
+          source={`guide-${slug}`}
+          variant="inline"
+          heading="Get guides like this in your inbox"
+          blurb={`Plain-English explanations like this one, plus the week's market-moving dates${releasePage ? (releasePage.type === "FOMC" ? ", including every Fed meeting" : `, including every ${releasePage.name} release`) : ""}. One free email a week.`}
+        />
+      )}
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold tracking-tight">Keep learning</h2>

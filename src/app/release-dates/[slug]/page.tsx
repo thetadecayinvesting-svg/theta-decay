@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AddToCalendar from "@/components/AddToCalendar";
+import NewsletterSignup from "@/components/NewsletterSignup";
+import { hasBeehiiv } from "@/lib/beehiiv";
 import { getSchedule, todayET } from "@/lib/calendar";
 import { yearsAgo } from "@/lib/chartFormat";
 import type { CalendarEvent } from "@/lib/events";
@@ -235,6 +237,15 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
           ))}
         </div>
       </section>
+
+      {hasBeehiiv() && (
+        <NewsletterSignup
+          source={`release-${slug}`}
+          variant="inline"
+          heading={`Never miss ${isFomc ? "a Fed meeting" : `a ${page.name} report`}`}
+          blurb={`Get the week's release dates${next ? `, like the next ${reportName} on ${fmt(next.date, { month: "long", day: "numeric" })},` : ""} plus what the numbers mean, in one free email a week.`}
+        />
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2">
         <Link
