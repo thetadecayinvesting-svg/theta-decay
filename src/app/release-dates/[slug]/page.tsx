@@ -103,6 +103,8 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
   const decision = lastMeeting ? await fomcDecision(lastMeeting.date, lastMeeting.meetingStart).catch(() => null) : null;
   const links = lastMeeting ? fomcLinks(lastMeeting.date, lastMeeting.withSep) : null;
   const lastDate = lastMeeting ? fmt(lastMeeting.date, { month: "long", day: "numeric", year: "numeric" }) : "";
+  // The decision box already shows the target range, so don't repeat it as a stat card.
+  const shownStats = stats.filter((st, i) => st && !(decision && guide?.stats[i]?.format === "range"));
 
   const nextText = next
     ? `The next ${reportName} ${isFomc ? "decision is" : "comes out"} on ${fmt(next.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" })} at ${timeLabel(next.timeET)}${
@@ -165,7 +167,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
       </div>
 
       {/* Next release + latest reading */}
-      <section className="grid gap-4 sm:grid-cols-3">
+      <section className={`grid gap-4 ${shownStats.length === 1 ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
         <div className="rounded-lg border border-border border-l-4 border-l-accent bg-surface p-5">
           <div className="text-xs text-muted">Next {reportName}</div>
           {next ? (
@@ -182,7 +184,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
             <div className="mt-1 text-lg font-semibold">To be announced</div>
           )}
         </div>
-        {stats.map(
+        {shownStats.map(
           (s) =>
             s && (
               <div key={s.label} className="rounded-lg border border-border bg-surface p-5">
