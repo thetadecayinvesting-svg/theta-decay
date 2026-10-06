@@ -182,10 +182,10 @@ h3 {
    ===================================================================== */
 :root[data-mode="light"] {
   color-scheme: light;
-  --bg: #f6f6f9;
-  --surface: #ffffff;
-  --border: #e3e2ea;
-  --surface-hover: #f0eff5;
+  --bg: #ffffff;
+  --surface: #f5f3fe; /* light violet tint */
+  --border: #e2ddf7;
+  --surface-hover: #ebe7fc;
   --text-primary: #16151f;
   --text-muted: #5d5a6e;
   --on-accent: #ffffff;
@@ -209,6 +209,9 @@ h3 {
 }
 
 :root[data-mode="light"][data-theme="midnight-gold"] {
+  --surface: #fbf7ee; /* light gold tint */
+  --border: #eee3cc;
+  --surface-hover: #f5ecd9;
   --accent: #9a5b00;
   --accent-hover: #7a4700;
   --accent-soft: rgb(154 91 0 / 0.12);
@@ -222,6 +225,9 @@ h3 {
 }
 
 :root[data-mode="light"][data-theme="terminal-teal"] {
+  --surface: #f0f8f7; /* light teal tint */
+  --border: #d4eae6;
+  --surface-hover: #e2f2ef;
   --accent: #0f766e;
   --accent-hover: #0b5c56;
   --accent-soft: rgb(15 118 110 / 0.12);
