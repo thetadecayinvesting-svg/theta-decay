@@ -201,7 +201,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
           <div className="text-xs font-medium uppercase tracking-wider text-accent">Latest decision · {lastDate}</div>
           <div className="mt-3 flex flex-wrap items-end justify-between gap-x-8 gap-y-2">
             <h2 className="text-xl font-semibold tracking-tight">
-              {decision.action === "held" ? "Rates held steady" : `Rates ${decision.action} ${decision.bp} bp`}
+              {decision.action === "held" ? "Rates held steady" : `Rates ${decision.action} ${decision.bp} basis points`}
             </h2>
             <div className="text-right">
               <div className="num text-2xl font-semibold leading-tight">{decision.range}</div>
