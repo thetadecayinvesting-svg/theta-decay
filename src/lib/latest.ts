@@ -161,31 +161,52 @@ async function summarize(
     }
 
     case "FOMC": {
-      const [upper, lower] = await Promise.all([
-        getSeries("DFEDTARU", { start: START }),
-        getSeries("DFEDTARL", { start: START }),
-      ]);
-      const nowUpper = upper.at(-1);
-      const nowLower = lower.at(-1);
-      // The range before this meeting began, to tell a hike, cut or hold apart.
-      const dayBefore = asDate(meetingStart ?? date);
-      dayBefore.setUTCDate(dayBefore.getUTCDate() - 1);
-      const prevUpper = valueOn(upper, dayBefore.toISOString().slice(0, 10));
-      if (!nowUpper || !nowLower || !prevUpper) return null;
-
-      const range = `${pct(nowLower.value)}–${pct(nowUpper.value)}`;
-      const diff = nowUpper.value - prevUpper.value;
-      const bp = Math.round(Math.abs(diff) * 100);
-      const summary =
-        Math.abs(diff) < 0.001
-          ? `The Federal Open Market Committee (FOMC) maintained the target range for the federal funds rate at ${range}.`
-          : `The Federal Open Market Committee (FOMC) ${diff > 0 ? "raised" : "lowered"} the target range for the federal funds rate by ${bp} basis points to ${range}.`;
+      const decision = await fomcDecision(date, meetingStart);
+      if (!decision) return null;
       return {
         type, date, title: "FOMC Rate Decision", href: "/dashboard#chart-fedfunds",
-        headline: range, headlineLabel: "Fed funds target range", summary,
+        headline: decision.range, headlineLabel: "Fed funds target range", summary: decision.summary,
       };
     }
   }
+}
+
+// What the FOMC decided at its most recent meeting (ending on `date`): the current
+// target range, and whether it was a hike, cut or hold. Null if FRED's data is missing.
+export async function fomcDecision(date: string, meetingStart: string | undefined) {
+  const [upper, lower] = await Promise.all([
+    getSeries("DFEDTARU", { start: START }),
+    getSeries("DFEDTARL", { start: START }),
+  ]);
+  // FRED records a new range from the day after the decision, so read the latest
+  // value (this is only used for the most recent meeting).
+  const nowUpper = upper.at(-1)?.value;
+  const nowLower = lower.at(-1)?.value;
+  // The range before this meeting began, to tell a hike, cut or hold apart.
+  const dayBefore = asDate(meetingStart ?? date);
+  dayBefore.setUTCDate(dayBefore.getUTCDate() - 1);
+  const prevUpper = valueOn(upper, dayBefore.toISOString().slice(0, 10))?.value;
+  if (nowUpper === undefined || nowLower === undefined || prevUpper === undefined) return null;
+
+  const range = `${nowLower.toFixed(2)}–${pct(nowUpper)}`; // "3.75–4.00%"
+  const diff = nowUpper - prevUpper;
+  const bp = Math.round(Math.abs(diff) * 100);
+  const action = Math.abs(diff) < 0.001 ? "held" : diff > 0 ? "raised" : "lowered";
+  const summary =
+    action === "held"
+      ? `The Federal Open Market Committee (FOMC) maintained the target range for the federal funds rate at ${range}.`
+      : `The Federal Open Market Committee (FOMC) ${action} the target range for the federal funds rate by ${bp} basis points to ${range}.`;
+  return { range, action, bp, summary };
+}
+
+// Official Federal Reserve pages for the meeting decided on `date` (YYYY-MM-DD).
+export function fomcLinks(date: string, withSep?: boolean) {
+  const d = date.replaceAll("-", "");
+  return {
+    statement: `https://www.federalreserve.gov/newsevents/pressreleases/monetary${d}a.htm`,
+    pressConference: `https://www.federalreserve.gov/monetarypolicy/fomcpresconf${d}.htm`,
+    projections: withSep ? `https://www.federalreserve.gov/monetarypolicy/fomcprojtabl${d}.htm` : undefined,
+  };
 }
 
 // The most recent release date's event(s) — several reports can share a day.

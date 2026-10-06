@@ -11,7 +11,25 @@ import { GUIDES } from "@/lib/learnContent";
 import { loadStat } from "@/lib/learnStats";
 import { learnHref } from "@/lib/learnTopics";
 import { RELEASE_PAGES, releaseHref, type ReleasePage } from "@/lib/releasePages";
+import { fomcDecision, fomcLinks } from "@/lib/latest";
 import { jsonLdScript, pageMetadata, SITE_URL } from "@/lib/site";
+
+// Link to an official page, styled like the site's other small buttons.
+function ExternalButton({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover"
+    >
+      <svg aria-hidden viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+        <path d="M11 4h5v5M16 4l-7 7M14 11.5V16H4V6h4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      {children}
+    </a>
+  );
+}
 
 // Refresh hourly so "next release" moves on as soon as a report comes out.
 export const revalidate = 3600;
@@ -80,6 +98,12 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
   const later = schedule.filter((e) => e.date > `${thisYear}-12-31`);
   const reportName = isFomc ? "FOMC meeting" : `${page.name} report`;
 
+  // FOMC only: what the Fed decided last time, with links to the official pages.
+  const lastMeeting = isFomc ? schedule.findLast((e) => e.happened) : undefined;
+  const decision = lastMeeting ? await fomcDecision(lastMeeting.date, lastMeeting.meetingStart).catch(() => null) : null;
+  const links = lastMeeting ? fomcLinks(lastMeeting.date, lastMeeting.withSep) : null;
+  const lastDate = lastMeeting ? fmt(lastMeeting.date, { month: "long", day: "numeric", year: "numeric" }) : "";
+
   const nextText = next
     ? `The next ${reportName} ${isFomc ? "decision is" : "comes out"} on ${fmt(next.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" })} at ${timeLabel(next.timeET)}${
         isIsm ? ` (${next.title.replace(/^ISM /, "")})` : coversLabel(next.date, page) ? `, covering ${coversLabel(next.date, page)}` : ""
@@ -88,6 +112,18 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
 
   const faqs = [
     { q: `When is the next ${reportName}?`, a: nextText },
+    ...(decision
+      ? [
+          {
+            q: "What did the Fed decide at its last meeting?",
+            a: `At its meeting on ${lastDate}, the Fed ${
+              decision.action === "held"
+                ? `kept the federal funds rate target range at ${decision.range}`
+                : `${decision.action} the federal funds rate target range by ${decision.bp} basis points to ${decision.range}`
+            }. The full FOMC statement is published on the Federal Reserve's website.`,
+          },
+        ]
+      : []),
     ...page.faqs,
     ...(fullYear
       ? [
@@ -157,6 +193,27 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
             ),
         )}
       </section>
+
+      {decision && links && (
+        <section className="rounded-lg border border-border bg-surface p-6">
+          <div className="text-xs font-medium uppercase tracking-wider text-accent">Latest decision · {lastDate}</div>
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-x-8 gap-y-2">
+            <h2 className="text-xl font-semibold tracking-tight">
+              {decision.action === "held" ? "Rates held steady" : `Rates ${decision.action} ${decision.bp} bp`}
+            </h2>
+            <div className="text-right">
+              <div className="num text-2xl font-semibold leading-tight">{decision.range}</div>
+              <div className="text-xs text-muted">Fed funds target range</div>
+            </div>
+          </div>
+          <p className="mt-3 leading-relaxed text-muted">{decision.summary}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <ExternalButton href={links.statement}>Read the FOMC statement</ExternalButton>
+            <ExternalButton href={links.pressConference}>Press conference</ExternalButton>
+            {links.projections && <ExternalButton href={links.projections}>Projections (dot plot)</ExternalButton>}
+          </div>
+        </section>
+      )}
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold tracking-tight">
