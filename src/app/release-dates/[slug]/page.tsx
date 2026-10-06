@@ -48,10 +48,42 @@ export async function generateMetadata({ params }: PageProps<"/release-dates/[sl
   if (!page) return {};
   return pageMetadata({
     title: withYear(page.metaTitle),
-    description: withYear(page.metaDescription),
+    description: (await liveDescription(page).catch(() => null)) ?? withYear(page.metaDescription),
     path: releaseHref(slug),
   });
 }
+
+// Search-result description that answers the question directly: the next date
+// (and, for the FOMC, the last decision). Null when no upcoming date is known.
+async function liveDescription(page: ReleasePage) {
+  const schedule = await getSchedule(page.type);
+  const next = schedule.find((e) => !e.happened);
+  if (!next) return null;
+  const when = `${fmt(next.date, { weekday: "long", month: "long", day: "numeric", year: "numeric" })} at ${timeLabel(next.timeET)}`;
+
+  if (page.type === "FOMC") {
+    // "October 27–28, 2026" (or "April 30–May 1, 2026" across a month end)
+    const start = next.meetingStart ?? next.date;
+    const sameMonth = start.slice(0, 7) === next.date.slice(0, 7);
+    const meeting = `${fmt(start, { month: "long", day: "numeric" })}–${fmt(next.date, sameMonth ? { day: "numeric" } : { month: "long", day: "numeric" })}, ${next.date.slice(0, 4)}`;
+    const last = schedule.findLast((e) => e.happened);
+    const decision = last ? await fomcDecision(last.date, last.meetingStart).catch(() => null) : null;
+    const lastText = decision
+      ? decision.action === "held"
+        ? ` Last decision: rates held at ${decision.range}.`
+        : ` Last decision: rates ${decision.action} by ${decision.bp} basis points to ${decision.range}.`
+      : "";
+    return `Next FOMC meeting: ${meeting}, decision at ${timeLabel(next.timeET)}.${lastText} Full ${year()} schedule.`;
+  }
+
+  const detail =
+    page.type === "ISM" ? ` (${next.title.replace(/^ISM /, "")})` : coversLabel(next.date, page) ? `, covering ${coversLabel(next.date, page)}` : "";
+  const scheduleText = page.fullYearKnown === false ? "Upcoming release dates" : `Full ${year()} release schedule`;
+  return `Next ${reportLabel(page)}: ${when}${detail}. ${scheduleText}, latest reading and FAQs.`;
+}
+
+// "CPI report", but "Jobs Report" (not "Jobs Report report").
+const reportLabel = (page: ReleasePage) => (page.name.endsWith("Report") ? page.name : `${page.name} report`);
 
 const asDate = (d: string) => new Date(`${d}T12:00:00Z`);
 const fmt = (d: string, opts: Intl.DateTimeFormatOptions) => asDate(d).toLocaleDateString("en-US", { ...opts, timeZone: "UTC" });
@@ -96,7 +128,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
   const next = schedule.find((e) => !e.happened);
   const rows = schedule.filter((e) => e.date.startsWith(thisYear));
   const later = schedule.filter((e) => e.date > `${thisYear}-12-31`);
-  const reportName = isFomc ? "FOMC meeting" : `${page.name} report`;
+  const reportName = isFomc ? "FOMC meeting" : reportLabel(page);
 
   // FOMC only: what the Fed decided last time, with links to the official pages.
   const lastMeeting = isFomc ? schedule.findLast((e) => e.happened) : undefined;
@@ -130,7 +162,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
     ...(fullYear
       ? [
           {
-            q: `How many ${isFomc ? "FOMC meetings" : `${page.name} reports`} are there in ${thisYear}?`,
+            q: `How many ${isFomc ? "FOMC meetings" : `${reportLabel(page)}s`} are there in ${thisYear}?`,
             a: `There are ${rows.length} scheduled ${isFomc ? "FOMC meetings" : `${page.name} releases`} in ${thisYear}. The full schedule is listed above.`,
           },
         ]
@@ -301,7 +333,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
         <NewsletterSignup
           source={`release-${slug}`}
           variant="inline"
-          heading={`Never miss ${isFomc ? "a Fed meeting" : `a ${page.name} report`}`}
+          heading={`Never miss ${isFomc ? "a Fed meeting" : `a ${reportLabel(page)}`}`}
           blurb={`Get the week's release dates${next ? `, like the next ${reportName} on ${fmt(next.date, { month: "long", day: "numeric" })},` : ""} plus what the numbers mean, in one free email a week.`}
         />
       )}
