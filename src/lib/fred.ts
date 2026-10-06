@@ -15,6 +15,30 @@ const RETRY_DELAYS_MS = [1000, 2500];
 const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Traffic control: send only a few requests at a time, a little apart, so a build
+// or a page refresh never hits FRED with a burst of hundreds at once (its firewall
+// blocks addresses that do). Applies per server process; next.config.ts also caps
+// how many processes a build uses.
+const MAX_CONCURRENT = 3;
+const MIN_GAP_MS = 150;
+let active = 0;
+let nextStart = 0;
+const waiting: (() => void)[] = [];
+
+async function throttled<T>(task: () => Promise<T>): Promise<T> {
+  if (active >= MAX_CONCURRENT) await new Promise<void>((resolve) => waiting.push(resolve));
+  active++;
+  try {
+    const wait = nextStart - Date.now();
+    nextStart = Math.max(nextStart, Date.now()) + MIN_GAP_MS;
+    if (wait > 0) await sleep(wait);
+    return await task();
+  } finally {
+    active--;
+    waiting.shift()?.();
+  }
+}
+
 export class MissingKeyError extends Error {
   constructor() {
     super("FRED_API_KEY is not set");
@@ -40,11 +64,12 @@ async function fredRequest<T>(
   url.searchParams.set("api_key", process.env.FRED_API_KEY!.trim());
   url.searchParams.set("file_type", "json");
 
-  let res = await fetch(url, { next: { revalidate } });
+  const get = () => throttled(() => fetch(url, { next: { revalidate } }));
+  let res = await get();
   for (const delay of RETRY_DELAYS_MS) {
     if (res.ok || !RETRYABLE_STATUS.has(res.status)) break;
     await sleep(delay);
-    res = await fetch(url, { next: { revalidate } });
+    res = await get();
   }
   if (!res.ok) {
     // FRED explains errors in JSON; never echo the URL, since it contains the key.
