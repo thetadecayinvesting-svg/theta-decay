@@ -113,7 +113,7 @@ h3 {
    Each one overrides the tokens above; anything not listed is shared.
    ===================================================================== */
 :root[data-theme="midnight-gold"] {
-  --bg: #0c0f17;
+  --bg: #000000;
   --surface: #151a26;
   --border: #262c3c;
   --surface-hover: #262c3c;
@@ -135,7 +135,7 @@ h3 {
 }
 
 :root[data-theme="terminal-teal"] {
-  --bg: #0a1213;
+  --bg: #000000;
   --surface: #111d1f;
   --border: #1f3033;
   --surface-hover: #1f3033;
