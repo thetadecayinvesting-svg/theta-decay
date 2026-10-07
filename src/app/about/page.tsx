@@ -39,6 +39,11 @@ const SOURCES = [
     what: "CPI inflation, payrolls and the unemployment rate",
   },
   {
+    name: "Institute for Supply Management (ISM)",
+    href: "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+    what: "ISM Manufacturing and Services PMI release schedule",
+  },
+  {
     name: "FINRA",
     href: "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics",
     what: "Monthly margin statistics",
@@ -154,7 +159,7 @@ function buildFaqs(events: CalendarEvent[]) {
     },
     {
       q: "Where does the data come from?",
-      a: "All economic data comes from official sources: FRED (Federal Reserve Bank of St. Louis), the Federal Reserve Board, the Bureau of Economic Analysis (BEA), the Bureau of Labor Statistics (BLS), FINRA and Coinbase via FRED. Live prices are provided by TradingView. Each chart's Details panel lists its exact source and a suggested citation.",
+      a: "All economic data comes from official sources: FRED (Federal Reserve Bank of St. Louis), the Federal Reserve Board, the Bureau of Economic Analysis (BEA), the Bureau of Labor Statistics (BLS), the Institute for Supply Management (ISM), FINRA and Coinbase via FRED. Live prices are provided by TradingView. Each chart's Details panel lists its exact source and a suggested citation.",
       href: "#data-sources",
     },
     {
