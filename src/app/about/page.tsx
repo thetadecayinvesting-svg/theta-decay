@@ -29,6 +29,16 @@ const SOURCES = [
     what: "FOMC meeting schedule",
   },
   {
+    name: "U.S. Bureau of Economic Analysis (BEA, via FRED)",
+    href: "https://www.bea.gov/",
+    what: "GDP, GDP contributions and PCE inflation",
+  },
+  {
+    name: "U.S. Bureau of Labor Statistics (BLS, via FRED)",
+    href: "https://www.bls.gov/",
+    what: "CPI inflation, payrolls and the unemployment rate",
+  },
+  {
     name: "FINRA",
     href: "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics",
     what: "Monthly margin statistics",
@@ -68,7 +78,7 @@ const SECTIONS = [
 const PRINCIPLES = [
   {
     title: "Official sources",
-    body: "Data comes directly from the Federal Reserve, FRED, FINRA and other primary sources, never from estimates or rumors.",
+    body: "Data comes directly from the Federal Reserve, FRED, the BEA, the BLS, FINRA and other primary sources, never from estimates or rumors.",
   },
   {
     title: "Fully transparent",
@@ -144,7 +154,7 @@ function buildFaqs(events: CalendarEvent[]) {
     },
     {
       q: "Where does the data come from?",
-      a: "All economic data comes from official sources: FRED (Federal Reserve Bank of St. Louis), the Federal Reserve Board, FINRA and Coinbase via FRED. Live prices are provided by TradingView. Each chart's Details panel lists its exact source and a suggested citation.",
+      a: "All economic data comes from official sources: FRED (Federal Reserve Bank of St. Louis), the Federal Reserve Board, the Bureau of Economic Analysis (BEA), the Bureau of Labor Statistics (BLS), FINRA and Coinbase via FRED. Live prices are provided by TradingView. Each chart's Details panel lists its exact source and a suggested citation.",
       href: "#data-sources",
     },
     {
