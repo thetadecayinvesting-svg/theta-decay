@@ -29,6 +29,7 @@ export type ChartConfig = {
   // "contributions": stacked bars that add up to a total (the last line, drawn as dots)
   kind?: "contributions";
   wide?: boolean; // span both columns on wide screens
+  decimals?: number; // digits shown for readings (default 2; exchange rates use 4)
   lastPoints?: number; // always show only the most recent N readings (ignores the range picker)
 };
 
@@ -174,6 +175,18 @@ export const CHARTS: ChartConfig[] = [
     unit: "",
     period: "month",
     lines: [{ key: "sentiment", fredId: "UMCSENT", label: "Consumer sentiment" }],
+  },
+  {
+    key: "usdeur",
+    section: "risk",
+    title: "U.S. Dollar vs. Euro",
+    keywords: ["dollar", "euro", "eur/usd", "eurusd", "exchange rate", "currency", "forex", "fx", "usd", "dexuseu"],
+    description: "Dollars needed to buy one euro (EUR/USD), weekly average. Lower means a stronger dollar.",
+    unit: "",
+    prefix: "$",
+    decimals: 4,
+    period: "week",
+    lines: [{ key: "usdeur", fredId: "DEXUSEU", label: "Dollars per euro", frequency: "w" }],
   },
   {
     key: "fedsurveys",

@@ -20,10 +20,10 @@ import { EXPLAINERS } from "@/lib/explainers";
 import SeriesDetailsPanel from "./SeriesDetailsPanel";
 
 // 3.35 stays "3.35"; big values like 1,412.3 become "1,412" so they stay readable.
-function formatValue(v: number) {
+function formatValue(v: number, decimals = 2) {
   return Math.abs(v) >= 1000
     ? v.toLocaleString("en-US", { maximumFractionDigits: 0 })
-    : v.toFixed(2);
+    : v.toFixed(decimals);
 }
 
 // Axis labels: compact for large numbers (e.g. 25,000,000 → "25M").
@@ -55,13 +55,13 @@ function sourceLabel(lines: LineConfig[]) {
   return parts.join(" · ");
 }
 
-function Change({ change }: { change: number | null }) {
+function Change({ change, decimals }: { change: number | null; decimals?: number }) {
   if (change === null) return null;
   // Market data only: green = rising, red = falling.
   const cls = change > 0 ? "text-up" : change < 0 ? "text-down" : "text-muted";
   return (
     <span className={cls}>
-      {change > 0 ? "▲" : change < 0 ? "▼" : "■"} {formatValue(Math.abs(change))}
+      {change > 0 ? "▲" : change < 0 ? "▼" : "■"} {formatValue(Math.abs(change), decimals)}
     </span>
   );
 }
@@ -74,6 +74,7 @@ function ChartTooltip({
   prefix = "",
   lines,
   contributions = false,
+  decimals,
 }: {
   active?: boolean;
   payload?: { payload: Row }[];
@@ -82,6 +83,7 @@ function ChartTooltip({
   prefix?: string;
   lines: LineConfig[];
   contributions?: boolean;
+  decimals?: number;
 }) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload;
@@ -122,7 +124,7 @@ function ChartTooltip({
               </>
             )}
             <span className="ml-auto font-semibold text-primary">
-              {prefix}{formatValue(row.values[line.key])}
+              {prefix}{formatValue(row.values[line.key], decimals)}
               {unit}
             </span>
           </div>
@@ -178,11 +180,11 @@ export default function ChartCard({
         {!multi && readings[0] && (
           <div className="shrink-0 text-right">
             <div className="num text-2xl font-semibold leading-tight">
-              {chart.prefix}{formatValue(readings[0].value)}
+              {chart.prefix}{formatValue(readings[0].value, chart.decimals)}
               <span className="text-base text-muted">{chart.unit}</span>
             </div>
             <div className="num text-xs text-muted">
-              <Change change={readings[0].change} /> · {formatPeriod(readings[0].date, chart.period)}
+              <Change change={readings[0].change} decimals={chart.decimals} /> · {formatPeriod(readings[0].date, chart.period)}
             </div>
           </div>
         )}
@@ -215,11 +217,11 @@ export default function ChartCard({
                 {r && !contributions && (
                   <div className="num mt-0.5 flex items-baseline gap-2">
                     <span className="text-xl font-semibold">
-                      {chart.prefix}{formatValue(r.value)}
+                      {chart.prefix}{formatValue(r.value, chart.decimals)}
                       <span className="text-sm text-muted">{chart.unit}</span>
                     </span>
                     <span className="text-xs">
-                      <Change change={r.change} />
+                      <Change change={r.change} decimals={chart.decimals} />
                     </span>
                   </div>
                 )}
@@ -320,7 +322,7 @@ export default function ChartCard({
               )}
               <Tooltip
                 content={
-                  <ChartTooltip period={chart.period} unit={chart.unit} prefix={chart.prefix} lines={chart.lines} />
+                  <ChartTooltip period={chart.period} unit={chart.unit} prefix={chart.prefix} lines={chart.lines} decimals={chart.decimals} />
                 }
                 cursor={{ stroke: "var(--chart-axis)", strokeWidth: 1 }}
               />

@@ -112,6 +112,14 @@ export const EXPLAINERS: Record<string, Explainer> = {
     watch:
       "Very low readings show widespread pessimism; a sustained rebound can signal improving spending ahead.",
   },
+  usdeur: {
+    what:
+      "This is the euro-dollar exchange rate (EUR/USD): how many U.S. dollars it takes to buy one euro. When the line falls, the dollar is getting stronger; when it rises, the dollar is weakening.",
+    whyItMatters:
+      "The dollar is the world's main safe-haven currency, so it often strengthens when investors get nervous. A strong dollar also makes U.S. exports more expensive and shrinks the overseas profits of U.S. companies, while a weak dollar does the opposite.",
+    watch:
+      "Sharp moves are the signal: a sudden dollar surge (the line dropping fast) has often come with market stress. The gap between U.S. and European interest rates is one of the biggest drivers of this rate.",
+  },
   fedsurveys: {
     what:
       "These PMI-style surveys from the Philadelphia and New York Federal Reserve Banks ask manufacturers whether business conditions are improving or getting worse.",
