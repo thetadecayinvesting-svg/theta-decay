@@ -349,17 +349,17 @@ export default function ChartCard({
         <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3 text-xs text-muted">
           <span>
             {sourceLabel(chart.lines)}
-            {onRemove && (
-              <>
-                {" · "}
-                <button onClick={onRemove} className="font-medium text-accent hover:text-accent-hover">
-                  Remove
-                </button>
-              </>
-            )}
             {chart.note && <> · {chart.note}</>}
           </span>
           <div className="flex shrink-0 items-center gap-2">
+            {onRemove && (
+              <button
+                onClick={onRemove}
+                className="mr-2 font-medium text-accent underline underline-offset-2 hover:text-accent-hover"
+              >
+                Remove
+              </button>
+            )}
             {explainer && (
               <button
                 onClick={() => setShowExplainer((v) => !v)}
