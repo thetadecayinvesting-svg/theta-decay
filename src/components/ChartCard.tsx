@@ -352,7 +352,7 @@ export default function ChartCard({
             {onRemove && (
               <>
                 {" · "}
-                <button onClick={onRemove} className="font-medium text-muted hover:text-primary">
+                <button onClick={onRemove} className="font-medium text-accent hover:text-accent-hover">
                   Remove
                 </button>
               </>

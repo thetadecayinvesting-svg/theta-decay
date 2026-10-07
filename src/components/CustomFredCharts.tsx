@@ -143,7 +143,7 @@ export function CustomChartsGrid({
               </div>
               <button
                 onClick={() => remove(entry.id)}
-                className="mt-4 self-start text-xs font-medium text-muted hover:text-primary"
+                className="mt-4 self-start text-xs font-medium text-accent hover:text-accent-hover"
               >
                 Remove
               </button>
