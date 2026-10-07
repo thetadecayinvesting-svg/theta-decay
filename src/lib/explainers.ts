@@ -62,6 +62,15 @@ export const EXPLAINERS: Record<string, Explainer> = {
       "Two consecutive quarters of shrinking GDP is a common rule of thumb for a recession, though recessions are officially dated by the NBER.",
     learnHref: "/learn/gdp",
   },
+  gdpdrivers: {
+    what:
+      "This chart splits each quarter's GDP growth into the four parts of the economy that produced it: consumer spending, business investment, government, and trade. Bars above zero added to growth; bars below zero subtracted from it. The dot is total GDP growth, which equals the bars added together.",
+    whyItMatters:
+      "The headline GDP number tells you how fast the economy grew; this shows why. Growth led by consumer spending and business investment is usually seen as healthier than growth from swings in trade or inventories, which often reverse the next quarter.",
+    watch:
+      "Consumer spending is about two-thirds of the economy, so it's the bar to watch. Large trade swings often come from businesses importing goods early (for example ahead of tariffs) and tend to even out over time.",
+    learnHref: "/learn/gdp",
+  },
   vix: {
     what:
       "The VIX measures how much investors expect the S&P 500 to swing over the next 30 days, based on stock option prices. It's often called the \"fear gauge\".",

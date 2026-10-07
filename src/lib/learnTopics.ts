@@ -11,6 +11,7 @@ export type LearnTopic = {
   category: string;
   keywords: string[];
   chartKey: string; // chart shown on the guide (see charts.ts)
+  extraChart?: { key: string; heading: string }; // a second chart, from the same page section
   eventType?: EventType; // calendar event for "next release"
 };
 
@@ -49,6 +50,7 @@ export const LEARN_TOPICS: LearnTopic[] = [
     category: "Growth",
     keywords: ["what is gdp", "gross domestic product", "real gdp", "economic growth", "recession"],
     chartKey: "gdp",
+    extraChart: { key: "gdpdrivers", heading: "What's driving GDP" },
     eventType: "GDP",
   },
   {

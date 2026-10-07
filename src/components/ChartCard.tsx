@@ -2,7 +2,9 @@
 
 import { useId, useState } from "react";
 import {
+  Bar,
   CartesianGrid,
+  ComposedChart,
   Line,
   LineChart,
   ReferenceLine,
@@ -71,6 +73,7 @@ function ChartTooltip({
   unit,
   prefix = "",
   lines,
+  contributions = false,
 }: {
   active?: boolean;
   payload?: { payload: Row }[];
@@ -78,9 +81,34 @@ function ChartTooltip({
   unit: string;
   prefix?: string;
   lines: LineConfig[];
+  contributions?: boolean;
 }) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload;
+  if (contributions) {
+    const total = lines.at(-1)!;
+    return (
+      <div className="rounded-lg border border-border bg-surface px-3 py-2 shadow-lg">
+        <div className="text-xs text-muted">{formatPeriod(row.date, period)}</div>
+        {lines.slice(0, -1).map((line, i) =>
+          row.values[line.key] === undefined ? null : (
+            <div key={line.key} className="num flex items-center gap-2 text-sm">
+              <span className="h-2.5 w-2.5 rounded-sm" style={{ background: lineColor(i) }} />
+              <span className="text-muted">{line.label}</span>
+              <span className="ml-auto pl-4 font-semibold text-primary">{signed(row.values[line.key])}</span>
+            </div>
+          ),
+        )}
+        {row.values[total.key] !== undefined && (
+          <div className="num mt-1 flex items-center gap-2 border-t border-border pt-1 text-sm">
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--text-primary)]" />
+            <span className="text-muted">{total.label}</span>
+            <span className="ml-auto pl-4 font-semibold text-primary">{formatValue(row.values[total.key])}%</span>
+          </div>
+        )}
+      </div>
+    );
+  }
   return (
     <div className="rounded-lg border border-border bg-surface px-3 py-2 shadow-lg">
       <div className="text-xs text-muted">{formatPeriod(row.date, period)}</div>
@@ -104,6 +132,9 @@ function ChartTooltip({
   );
 }
 
+// "+2.51" / "−1.10": contributions read as adding to or subtracting from growth.
+const signed = (v: number) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v).toFixed(2)}`;
+
 // Same look as the "Add to calendar" button; highlighted while its panel is open.
 const actionButton = (active: boolean) =>
   `inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover ${
@@ -112,8 +143,8 @@ const actionButton = (active: boolean) =>
 
 export default function ChartCard({
   chart,
-  rows,
-  spanYears,
+  rows: rangeRows,
+  spanYears: rangeSpanYears,
   onRemove,
 }: {
   chart: ChartResult;
@@ -127,9 +158,18 @@ export default function ChartCard({
   const detailsId = useId();
   const multi = chart.lines.length > 1;
   const readings = chart.lines.map((line) => latestReading(chart.rows, line.key));
+  const contributions = chart.kind === "contributions";
+  // Some charts always show a fixed recent window instead of the selected range.
+  const rows = chart.lastPoints ? chart.rows.slice(-chart.lastPoints) : rangeRows;
+  const spanYears = chart.lastPoints
+    ? Math.max(1, Math.round(chart.lastPoints / (chart.period === "quarter" ? 4 : 12)))
+    : rangeSpanYears;
 
   return (
-    <section id={`chart-${chart.key}`} className="flex flex-col rounded-lg border border-border bg-surface p-6">
+    <section
+      id={`chart-${chart.key}`}
+      className={`flex flex-col rounded-lg border border-border bg-surface p-6 ${chart.wide ? "lg:col-span-2" : ""}`}
+    >
       <header className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <h3 className="font-medium">{chart.title}</h3>
@@ -156,10 +196,23 @@ export default function ChartCard({
             return (
               <div key={line.key}>
                 <div className="flex items-center gap-2 text-xs text-muted">
-                  <span className="h-0.5 w-4 rounded-full" style={{ background: lineColor(i) }} />
+                  {contributions ? (
+                    i === chart.lines.length - 1 ? (
+                      <span className="h-2.5 w-2.5 rounded-full bg-[var(--text-primary)]" />
+                    ) : (
+                      <span className="h-2.5 w-2.5 rounded-sm" style={{ background: lineColor(i) }} />
+                    )
+                  ) : (
+                    <span className="h-0.5 w-4 rounded-full" style={{ background: lineColor(i) }} />
+                  )}
                   {line.label}
                 </div>
-                {r && (
+                {r && contributions && (
+                  <div className="num mt-0.5 text-xl font-semibold">
+                    {i === chart.lines.length - 1 ? `${formatValue(r.value)}%` : signed(r.value)}
+                  </div>
+                )}
+                {r && !contributions && (
                   <div className="num mt-0.5 flex items-baseline gap-2">
                     <span className="text-xl font-semibold">
                       {chart.prefix}{formatValue(r.value)}
@@ -188,6 +241,57 @@ export default function ChartCard({
       ) : rows.length === 0 ? (
         <div className="mt-5 grid h-60 place-items-center rounded-lg bg-surface-hover text-sm text-muted">
           No data yet
+        </div>
+      ) : contributions ? (
+        <div className="mt-5 h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={rows} stackOffset="sign" margin={{ top: 4, right: 16, bottom: 0, left: -12 }}>
+              <CartesianGrid vertical={false} stroke="var(--chart-grid)" />
+              <XAxis
+                dataKey="date"
+                ticks={pickTicks(rows, spanYears)}
+                interval={0}
+                tickFormatter={(d: string) => formatTick(d, spanYears)}
+                tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tickFormatter={(v: number) => String(v)}
+                tick={{ fill: "var(--chart-axis)", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={52}
+              />
+              <ReferenceLine y={0} stroke="var(--chart-axis)" />
+              <Tooltip
+                content={<ChartTooltip period={chart.period} unit="" lines={chart.lines} contributions />}
+                cursor={{ fill: "var(--surface-hover)", opacity: 0.6 }}
+              />
+              {chart.lines.slice(0, -1).map((line, i) => (
+                <Bar
+                  key={line.key}
+                  stackId="parts"
+                  dataKey={(row: Row) => row.values[line.key]}
+                  name={line.label}
+                  fill={lineColor(i)}
+                  stroke="var(--surface)"
+                  strokeWidth={1}
+                  maxBarSize={28}
+                  isAnimationActive={false}
+                />
+              ))}
+              <Line
+                type="linear"
+                dataKey={(row: Row) => row.values[chart.lines.at(-1)!.key]}
+                name={chart.lines.at(-1)!.label}
+                stroke="none"
+                dot={{ r: 4, fill: "var(--text-primary)", stroke: "var(--surface)", strokeWidth: 2 }}
+                activeDot={{ r: 5, fill: "var(--text-primary)", stroke: "var(--surface)", strokeWidth: 2 }}
+                isAnimationActive={false}
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
         </div>
       ) : (
         <div className="mt-5 h-60">

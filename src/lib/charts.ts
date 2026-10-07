@@ -26,6 +26,10 @@ export type ChartConfig = {
   lines: LineConfig[]; // colored --chart-1, --chart-2, … in this order
   zeroLine?: boolean;
   zeroBased?: boolean; // start the y-axis at 0 (for amounts, not rates)
+  // "contributions": stacked bars that add up to a total (the last line, drawn as dots)
+  kind?: "contributions";
+  wide?: boolean; // span both columns on wide screens
+  lastPoints?: number; // always show only the most recent N readings (ignores the range picker)
 };
 
 export const CHARTS: ChartConfig[] = [
@@ -93,6 +97,25 @@ export const CHARTS: ChartConfig[] = [
     period: "quarter",
     zeroLine: true,
     lines: [{ key: "gdp", fredId: "A191RL1Q225SBEA", label: "Real GDP" }],
+  },
+  {
+    key: "gdpdrivers",
+    section: "economy",
+    title: "What's Driving GDP",
+    keywords: ["gdp drivers", "gdp contributions", "consumer spending", "business investment", "government spending", "net exports", "trade", "growth"],
+    description: "Contributions to real GDP growth, percentage points at an annual rate",
+    unit: "",
+    period: "quarter",
+    kind: "contributions",
+    wide: true,
+    lastPoints: 12, // three years of quarters; 2020's huge swings would flatten everything else
+    lines: [
+      { key: "consumers", fredId: "DPCERY2Q224SBEA", label: "Consumer spending" },
+      { key: "investment", fredId: "A006RY2Q224SBEA", label: "Business investment" },
+      { key: "government", fredId: "A822RY2Q224SBEA", label: "Government" },
+      { key: "trade", fredId: "A019RY2Q224SBEA", label: "Trade (net exports)" },
+      { key: "total", fredId: "A191RL1Q225SBEA", label: "Total GDP growth" },
+    ],
   },
 
   // ---- Market Risk ---------------------------------------------------

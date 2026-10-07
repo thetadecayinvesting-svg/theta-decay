@@ -46,6 +46,7 @@ export default async function LearnGuidePage({ params }: PageProps<"/learn/[slug
     Promise.all(guide.stats.map((s) => loadStat(s, start))),
   ]);
   const chart = charts.find((c) => c.key === topic.chartKey);
+  const extraChart = topic.extraChart ? charts.find((c) => c.key === topic.extraChart!.key) : undefined;
   const next = topic.eventType ? events.find((e) => e.type === topic.eventType) : undefined;
   const releasePage = topic.eventType ? releasePageFor(topic.eventType) : undefined;
   const tenYearsAgo = yearsAgo(10);
@@ -111,6 +112,13 @@ export default async function LearnGuidePage({ params }: PageProps<"/learn/[slug
         <section className="space-y-3">
           <h2 className="text-xl font-semibold tracking-tight">{chart.title} over time</h2>
           <ChartCard chart={chart} rows={chart.rows.filter((r) => r.date >= tenYearsAgo)} spanYears={10} />
+        </section>
+      )}
+
+      {extraChart && topic.extraChart && (
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold tracking-tight">{topic.extraChart.heading}</h2>
+          <ChartCard chart={extraChart} rows={extraChart.rows} spanYears={3} />
         </section>
       )}
 
