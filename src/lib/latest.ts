@@ -155,8 +155,7 @@ async function summarize(
         type, date, title, href: ISM_REPORTS_URL, external: true, guideHref: "/learn/pmi",
         summary:
           `The Institute for Supply Management (ISM) released its ${services ? "Services" : "Manufacturing"} PMI for ${monthName(monthBefore(date))}, ` +
-          `a monthly survey of purchasing managers at U.S. ${services ? "service businesses" : "manufacturers"}. ` +
-          "A reading above 50 indicates expansion and below 50 indicates contraction.",
+          `a monthly survey of purchasing managers at U.S. ${services ? "service businesses" : "manufacturers"}.`,
       };
     }
 
