@@ -11,7 +11,7 @@ import { GUIDES } from "@/lib/learnContent";
 import { loadStat } from "@/lib/learnStats";
 import { learnHref } from "@/lib/learnTopics";
 import { RELEASE_PAGES, releaseHref, type ReleasePage } from "@/lib/releasePages";
-import { fomcDecision, fomcLinks } from "@/lib/latest";
+import { fomcDecision, fomcLinks, fomcResults } from "@/lib/latest";
 import { jsonLdScript, pageMetadata, SITE_URL } from "@/lib/site";
 
 // Link to an official page, styled like the site's other small buttons.
@@ -111,6 +111,88 @@ function meetingLabel(e: CalendarEvent) {
   return `${start}–${end.slice(0, 3) === start.slice(0, 3) ? end.slice(4) : end}`;
 }
 
+// "October 27–28" for a two-day FOMC meeting (full month names, for sentences).
+function meetingDays(e: CalendarEvent) {
+  const start = e.meetingStart ?? e.date;
+  const sameMonth = start.slice(0, 7) === e.date.slice(0, 7);
+  return `${fmt(start, { month: "long", day: "numeric" })}–${fmt(e.date, sameMonth ? { day: "numeric" } : { month: "long", day: "numeric" })}`;
+}
+
+type FomcResult = { action: "held" | "raised" | "lowered"; bp: number; range: string };
+
+// One year's release schedule. For the FOMC, `results` adds what each past meeting decided.
+function ScheduleTable({
+  page,
+  rows,
+  next,
+  results,
+}: {
+  page: ReleasePage;
+  rows: (CalendarEvent & { happened: boolean })[];
+  next: CalendarEvent | undefined;
+  results: Record<string, FomcResult> | null;
+}) {
+  const isFomc = page.type === "FOMC";
+  const isIsm = page.type === "ISM";
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border text-left text-xs text-muted">
+            {isFomc && <th className="px-4 py-3 font-medium">Meeting</th>}
+            <th className="px-4 py-3 font-medium">{isFomc ? "Decision day" : "Release date"}</th>
+            <th className="px-4 py-3 font-medium">Time</th>
+            {isIsm && <th className="px-4 py-3 font-medium">Report</th>}
+            {page.coversLagMonths !== undefined && <th className="px-4 py-3 font-medium">Data for</th>}
+            {isFomc && <th className="px-4 py-3 font-medium">Projections</th>}
+            {results && <th className="px-4 py-3 font-medium">Result</th>}
+            <th className="px-4 py-3 font-medium">Status</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border">
+          {rows.map((e) => {
+            const isNext = e === next;
+            const result = results?.[e.date];
+            return (
+              <tr key={`${e.date}-${e.title}`} className={isNext ? "bg-accent-soft" : e.happened ? "text-muted" : ""}>
+                {isFomc && <td className="px-4 py-3 whitespace-nowrap">{meetingLabel(e)}</td>}
+                <td className="px-4 py-3 font-medium whitespace-nowrap">{fmt(e.date, { weekday: "short", month: "short", day: "numeric" })}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{timeLabel(e.timeET)}</td>
+                {isIsm && <td className="px-4 py-3">{e.title.replace(/^ISM | PMI$/g, "")}</td>}
+                {page.coversLagMonths !== undefined && <td className="px-4 py-3 whitespace-nowrap">{coversLabel(e.date, page)}</td>}
+                {isFomc && <td className="px-4 py-3">{e.withSep ? "Dot plot" : "—"}</td>}
+                {results && (
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {result ? (
+                      <>
+                        <div className="text-primary">
+                          {result.action === "held" ? "Held steady" : `${result.action === "raised" ? "Raised" : "Lowered"} by ${result.bp} basis points`}
+                        </div>
+                        <div className="num text-xs text-muted">{result.range}</div>
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                )}
+                <td className="px-4 py-3">
+                  {isNext ? (
+                    <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-on-accent">Next</span>
+                  ) : e.happened ? (
+                    "Released"
+                  ) : (
+                    "Upcoming"
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default async function ReleaseDatesPage({ params }: PageProps<"/release-dates/[slug]">) {
   const { slug } = await params;
   const page = RELEASE_PAGES.find((p) => p.slug === slug);
@@ -135,6 +217,10 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
   const decision = lastMeeting ? await fomcDecision(lastMeeting.date, lastMeeting.meetingStart).catch(() => null) : null;
   const links = lastMeeting ? fomcLinks(lastMeeting.date, lastMeeting.withSep) : null;
   const lastDate = lastMeeting ? fmt(lastMeeting.date, { month: "long", day: "numeric", year: "numeric" }) : "";
+  // Every past 2026 meeting's outcome, for the Result column.
+  const results = isFomc ? await fomcResults(rows.filter((e) => e.happened)).catch(() => ({})) : null;
+  const nextYear = String(Number(thisYear) + 1);
+  const nextYearRows = later.filter((e) => e.date.startsWith(nextYear));
   // The decision box already shows the target range, so don't repeat it as a stat card.
   const shownStats = stats.filter((st, i) => st && !(decision && guide?.stats[i]?.format === "range"));
 
@@ -155,6 +241,16 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
                 ? `kept the federal funds rate target range at ${decision.range}`
                 : `${decision.action} the federal funds rate target range by ${decision.bp} basis points to ${decision.range}`
             }. The full FOMC statement is published on the Federal Reserve's website.`,
+          },
+        ]
+      : []),
+    ...(isFomc && nextYearRows.length > 0
+      ? [
+          {
+            q: `When are the FOMC meetings in ${nextYear}?`,
+            a: `The FOMC has scheduled ${nextYearRows.length} meetings in ${nextYear}: ${nextYearRows
+              .map((e) => meetingDays(e))
+              .join(", ")}. Each rate decision is announced at 2:00 PM ET on the second day.`,
           },
         ]
       : []),
@@ -253,55 +349,23 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
         <h2 className="text-xl font-semibold tracking-tight">
           {fullYear ? `${thisYear} ${isFomc ? "FOMC meeting" : `${page.name} release`} schedule` : `Upcoming ${page.name} release dates`}
         </h2>
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-xs text-muted">
-                {isFomc && <th className="px-4 py-3 font-medium">Meeting</th>}
-                <th className="px-4 py-3 font-medium">{isFomc ? "Decision" : "Release date"}</th>
-                <th className="px-4 py-3 font-medium">Time</th>
-                {isIsm && <th className="px-4 py-3 font-medium">Report</th>}
-                {page.coversLagMonths !== undefined && <th className="px-4 py-3 font-medium">Data for</th>}
-                {isFomc && <th className="px-4 py-3 font-medium">Projections</th>}
-                <th className="px-4 py-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {rows.map((e) => {
-                const isNext = e === next;
-                return (
-                  <tr key={`${e.date}-${e.title}`} className={isNext ? "bg-accent-soft" : e.happened ? "text-muted" : ""}>
-                    {isFomc && <td className="px-4 py-3 whitespace-nowrap">{meetingLabel(e)}</td>}
-                    <td className="px-4 py-3 font-medium whitespace-nowrap">{fmt(e.date, { weekday: "short", month: "short", day: "numeric" })}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{timeLabel(e.timeET)}</td>
-                    {isIsm && <td className="px-4 py-3">{e.title.replace(/^ISM | PMI$/g, "")}</td>}
-                    {page.coversLagMonths !== undefined && <td className="px-4 py-3 whitespace-nowrap">{coversLabel(e.date, page)}</td>}
-                    {isFomc && <td className="px-4 py-3">{e.withSep ? "Dot plot" : "—"}</td>}
-                    <td className="px-4 py-3">
-                      {isNext ? (
-                        <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-medium text-on-accent">Next</span>
-                      ) : e.happened ? (
-                        "Released"
-                      ) : (
-                        "Upcoming"
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {later.length > 0 && (
-          <p className="text-sm text-muted">
-            Already scheduled for {Number(thisYear) + 1}:{" "}
-            {later
-              .filter((e) => e.date.startsWith(String(Number(thisYear) + 1)))
-              .slice(0, isFomc ? 8 : 3)
-              .map((e) => fmt(e.date, { month: "short", day: "numeric" }))
-              .join(", ")}
-            .
-          </p>
+        <ScheduleTable page={page} rows={rows} next={next} results={results} />
+        {isFomc && nextYearRows.length > 0 ? (
+          <div className="space-y-3 pt-6">
+            <h2 className="text-xl font-semibold tracking-tight">{nextYear} FOMC meeting schedule</h2>
+            <ScheduleTable page={page} rows={nextYearRows} next={next} results={null} />
+          </div>
+        ) : (
+          later.length > 0 && (
+            <p className="text-sm text-muted">
+              Already scheduled for {nextYear}:{" "}
+              {nextYearRows
+                .slice(0, 3)
+                .map((e) => fmt(e.date, { month: "short", day: "numeric" }))
+                .join(", ")}
+              .
+            </p>
+          )
         )}
         <p className="text-xs text-muted">
           {fullYear ? `Dates from the ${page.publisher}.` : `Dates from the ${page.publisher}; new dates are added as they're published.`} See every

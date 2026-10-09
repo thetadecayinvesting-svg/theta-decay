@@ -199,6 +199,37 @@ export async function fomcDecision(date: string, meetingStart: string | undefine
   return { range, action, bp, summary };
 }
 
+// The outcome of each past FOMC meeting (keyed by decision date): the range before
+// the meeting vs. the range the day after the decision, when FRED has that day yet.
+export async function fomcResults(meetings: { date: string; meetingStart?: string }[]) {
+  const [upper, lower] = await Promise.all([
+    getSeries("DFEDTARU", { start: START }),
+    getSeries("DFEDTARL", { start: START }),
+  ]);
+  const lastDate = upper.at(-1)?.date ?? "";
+  const shift = (d: string, days: number) => {
+    const x = asDate(d);
+    x.setUTCDate(x.getUTCDate() + days);
+    return x.toISOString().slice(0, 10);
+  };
+  const results: Record<string, { action: "held" | "raised" | "lowered"; bp: number; range: string }> = {};
+  for (const m of meetings) {
+    const dayAfter = shift(m.date, 1);
+    if (dayAfter > lastDate) continue; // FRED hasn't recorded the new range yet
+    const before = valueOn(upper, shift(m.meetingStart ?? m.date, -1))?.value;
+    const afterUpper = valueOn(upper, dayAfter)?.value;
+    const afterLower = valueOn(lower, dayAfter)?.value;
+    if (before === undefined || afterUpper === undefined || afterLower === undefined) continue;
+    const diff = afterUpper - before;
+    results[m.date] = {
+      action: Math.abs(diff) < 0.001 ? "held" : diff > 0 ? "raised" : "lowered",
+      bp: Math.round(Math.abs(diff) * 100),
+      range: `${afterLower.toFixed(2)}–${pct(afterUpper)}`,
+    };
+  }
+  return results;
+}
+
 // Official Federal Reserve pages for the meeting decided on `date` (YYYY-MM-DD).
 export function fomcLinks(date: string, withSep?: boolean) {
   const d = date.replaceAll("-", "");
