@@ -10,7 +10,7 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   description:
-    "Economic calendar with upcoming FOMC rate decisions, CPI inflation, jobs reports, GDP and PCE release dates, plus live macro and market charts.",
+    "Theta Decay Investing is an informational website with a free economic calendar counting down to every FOMC meeting, CPI, GDP and jobs report, plus live charts.",
   alternates: { canonical: "/" },
 };
 
