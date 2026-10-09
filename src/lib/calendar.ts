@@ -56,6 +56,27 @@ const FRED_RELEASES: {
   },
 ];
 
+// Dates an agency has published that FRED doesn't list yet (FRED adds next year's
+// schedule some weeks later). Only used beyond the last date FRED knows for that
+// report, so FRED's own dates take over automatically once it has them.
+// Source: BEA 2027 release schedule (bea.gov/news/schedule/next-year), checked Oct 8, 2026.
+// Add CPI and jobs dates here when BLS publishes its 2027 calendar.
+const PUBLISHED_AHEAD: Partial<Record<EventType, string[]>> = {
+  GDP: [
+    "2027-01-28", "2027-02-25", "2027-03-31", "2027-04-29", "2027-05-27", "2027-06-25",
+    "2027-07-29", "2027-08-25", "2027-09-30", "2027-10-28", "2027-11-24", "2027-12-22",
+  ],
+  PCE: [
+    "2027-02-04", "2027-03-09", "2027-04-06", "2027-04-30", "2027-06-09", "2027-07-07",
+    "2027-08-05", "2027-09-08", "2027-10-06", "2027-11-04", "2027-12-01",
+  ],
+};
+
+function withPublishedAhead(type: EventType, fredDates: string[]) {
+  const last = fredDates.at(-1) ?? "";
+  return [...fredDates, ...(PUBLISHED_AHEAD[type] ?? []).filter((d) => d > last)];
+}
+
 function formatShortRange(start: string, end: string) {
   const fmt = (d: string) =>
     new Date(`${d}T12:00:00Z`).toLocaleDateString("en-US", {
@@ -143,7 +164,7 @@ export async function getCalendar(): Promise<{
     results.forEach((result, i) => {
       const release = FRED_RELEASES[i];
       if (result.status === "fulfilled") {
-        for (const date of result.value) {
+        for (const date of withPublishedAhead(release.type, result.value)) {
           events.push({
             date,
             type: release.type,
@@ -229,7 +250,7 @@ export async function getSchedule(type: EventType): Promise<(CalendarEvent & { h
   else {
     const release = FRED_RELEASES.find((r) => r.type === type);
     if (!release || !hasFredKey()) return [];
-    const dates = await getReleaseDates(release.id, from);
+    const dates = withPublishedAhead(type, await getReleaseDates(release.id, from));
     events = dates.map((date) => ({ date, type, title: release.title, detail: release.detail, timeET: "08:30" }));
   }
   return events

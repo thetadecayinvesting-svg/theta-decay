@@ -244,14 +244,21 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
           },
         ]
       : []),
-    ...(isFomc && nextYearRows.length > 0
+    ...(nextYearRows.length > 0
       ? [
-          {
-            q: `When are the FOMC meetings in ${nextYear}?`,
-            a: `The FOMC has scheduled ${nextYearRows.length} meetings in ${nextYear}: ${nextYearRows
-              .map((e) => meetingDays(e))
-              .join(", ")}. Each rate decision is announced at 2:00 PM ET on the second day.`,
-          },
+          isFomc
+            ? {
+                q: `When are the FOMC meetings in ${nextYear}?`,
+                a: `The FOMC has scheduled ${nextYearRows.length} meetings in ${nextYear}: ${nextYearRows
+                  .map((e) => meetingDays(e))
+                  .join(", ")}. Each rate decision is announced at 2:00 PM ET on the second day.`,
+              }
+            : {
+                q: `When are the ${reportLabel(page)}s in ${nextYear}?`,
+                a: `The ${page.publisher} has scheduled ${nextYearRows.length} ${page.name} releases in ${nextYear}: ${nextYearRows
+                  .map((e) => fmt(e.date, { month: "long", day: "numeric" }))
+                  .join(", ")}, each at ${timeLabel(nextYearRows[0].timeET)}.`,
+              },
         ]
       : []),
     ...page.faqs,
@@ -350,9 +357,11 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
           {fullYear ? `${thisYear} ${isFomc ? "FOMC meeting" : `${page.name} release`} schedule` : `Upcoming ${page.name} release dates`}
         </h2>
         <ScheduleTable page={page} rows={rows} next={next} results={results} />
-        {isFomc && nextYearRows.length > 0 ? (
+        {nextYearRows.length > 0 ? (
           <div className="space-y-3 pt-6">
-            <h2 className="text-xl font-semibold tracking-tight">{nextYear} FOMC meeting schedule</h2>
+            <h2 className="text-xl font-semibold tracking-tight">
+              {nextYear} {isFomc ? "FOMC meeting" : `${page.name} release`} schedule
+            </h2>
             <ScheduleTable page={page} rows={nextYearRows} next={next} results={null} />
           </div>
         ) : (
