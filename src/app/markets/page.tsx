@@ -7,7 +7,7 @@ import PerformanceChart from "@/components/markets/PerformanceChart";
 import SpFedChart from "@/components/markets/SpFedChart";
 import StatCards from "@/components/markets/StatCards";
 import TickerTape from "@/components/TickerTape";
-import { ASSETS } from "@/lib/assets";
+import { ASSETS, FRED_ASSETS } from "@/lib/assets";
 import { formatPeriod } from "@/lib/chartFormat";
 import { hasBeehiiv } from "@/lib/beehiiv";
 import { getMarketData } from "@/lib/markets";
@@ -24,7 +24,7 @@ export const metadata: Metadata = pageMetadata({
 export const revalidate = 3600;
 
 export default async function MarketsPage() {
-  const perfAssets = ASSETS.filter((a) => a.key !== "btc");
+  const perfAssets = FRED_ASSETS;
   const perfLines: LineConfig[] = perfAssets.map((a) => ({ key: a.key, fredId: a.fredId, label: a.name }));
   const spFedLines: LineConfig[] = [
     { key: "sp", fredId: "SP500", label: "S&P 500" },
@@ -84,18 +84,15 @@ export default async function MarketsPage() {
           </div>
         )}
 
-        <StatCards assets={ASSETS} series={assets} />
+        <StatCards assets={FRED_ASSETS} series={assets} />
         {latestDates.length > 0 && (
           <p className="text-xs text-muted">
-            Data as of {formatPeriod(latestDates.sort()[0], "day")}
-            {latestDates.some((d) => d !== latestDates[0]) &&
-              ` (Bitcoin trades daily: ${formatPeriod(latestDates.at(-1)!, "day")})`}{" "}
-            · Source: FRED, Federal Reserve Bank of St. Louis (Bitcoin: Coinbase). S&amp;P 500 and
+            Data as of {formatPeriod(latestDates.sort()[0], "day")} · Source: FRED, Federal
+            Reserve Bank of St. Louis. S&amp;P 500 and
             Dow Jones © S&amp;P Dow Jones Indices LLC.
           </p>
         )}
 
-        {/* Stock indices only: Bitcoin's swings would dwarf them on this chart. */}
         <PerformanceChart assets={perfAssets} series={assets} details={{ lines: perfLines, details: perfDetails }} />
         <SpFedChart sp={sp} fed={fedFunds.points} details={{ lines: spFedLines, details: spFedDetails }} />
       </section>

@@ -81,8 +81,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <div className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted sm:px-6">
             Data: FRED®, Federal Reserve Bank of St. Louis; FINRA Margin
             Statistics; FOMC schedule from
-            federalreserve.gov. ISM® and PMI® are registered trademarks of the Institute for
-            Supply Management. For information only — not investment advice.
+            federalreserve.gov. VIX® data © Cboe Global Markets; Nasdaq Composite © Nasdaq, Inc.;
+            S&amp;P 500® and Dow Jones® © S&amp;P Dow Jones Indices LLC; ICE BofA index data © ICE Data
+            Indices, LLC; used with permission via FRED. ISM® and PMI® are registered trademarks of
+            the Institute for Supply Management. For information only — not investment advice.
             <nav aria-label="Footer" className="mt-2 flex gap-4">
               <Link href="/release-dates" className="hover:text-primary">Release Dates</Link>
               <Link href="/about" className="hover:text-primary">About</Link>

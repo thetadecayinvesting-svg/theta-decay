@@ -6,8 +6,8 @@
 export type Asset = {
   key: "nasdaq" | "sp500" | "dow" | "btc";
   name: string;
-  fredId: string;
-  source: string; // who publishes the FRED series
+  fredId?: string; // FRED series for the long-term charts; none = live widget only
+  source: string; // who publishes the data
   tvSymbol: string;
   tvLabel: string;
 };
@@ -38,11 +38,15 @@ export const ASSETS: Asset[] = [
     tvLabel: "Dow Jones · DIA ETF",
   },
   {
+    // Live TradingView widget only: Coinbase doesn't allow its FRED data to be
+    // reproduced without written permission, so there's no long-term Bitcoin data.
     key: "btc",
     name: "Bitcoin",
-    fredId: "CBBTCUSD",
-    source: "FRED, Federal Reserve Bank of St. Louis; Coinbase",
+    source: "TradingView",
     tvSymbol: "COINBASE:BTCUSD",
     tvLabel: "Bitcoin · BTC/USD",
   },
 ];
+
+// Assets with FRED data, for the stat cards and long-term charts.
+export const FRED_ASSETS = ASSETS.filter((a): a is Asset & { fredId: string } => Boolean(a.fredId));

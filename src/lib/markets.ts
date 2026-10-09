@@ -1,4 +1,4 @@
-import { ASSETS, type Asset } from "./assets";
+import { FRED_ASSETS, type Asset } from "./assets";
 import { getSeries, hasFredKey, type Point } from "./fred";
 
 // FRED only carries the last 10 years of S&P 500 and Dow data (licensing),
@@ -15,7 +15,7 @@ async function load(fredId: string) {
   }
 }
 
-// Daily closes for the four assets plus the monthly fed funds rate.
+// Daily closes for the stock indices plus the monthly fed funds rate.
 // Cached and re-checked with FRED at most once an hour (see fred.ts).
 export async function getMarketData(): Promise<{
   assets: AssetSeries[];
@@ -24,7 +24,7 @@ export async function getMarketData(): Promise<{
 }> {
   if (!hasFredKey()) {
     return {
-      assets: ASSETS.map((a) => ({ key: a.key, points: [] })),
+      assets: FRED_ASSETS.map((a) => ({ key: a.key, points: [] })),
       fedFunds: { points: [] },
       missingKey: true,
     };
@@ -32,11 +32,11 @@ export async function getMarketData(): Promise<{
 
   const [fedFunds, ...assets] = await Promise.all([
     load("FEDFUNDS"),
-    ...ASSETS.map((a) => load(a.fredId)),
+    ...FRED_ASSETS.map((a) => load(a.fredId)),
   ]);
 
   return {
-    assets: ASSETS.map((a, i) => ({ key: a.key, ...assets[i] })),
+    assets: FRED_ASSETS.map((a, i) => ({ key: a.key, ...assets[i] })),
     fedFunds,
     missingKey: false,
   };

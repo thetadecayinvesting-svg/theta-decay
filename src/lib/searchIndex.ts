@@ -2,7 +2,7 @@
 // each with the other names people use for it ("inflation" → CPI and PCE,
 // "fed" → FOMC and the fed funds rate). Shared by server and browser code.
 
-import { ASSETS } from "./assets";
+import { FRED_ASSETS, type Asset } from "./assets";
 import { CHARTS } from "./charts";
 import type { CalendarEvent, EventType } from "./events";
 import { LEARN_TOPICS, learnHref } from "./learnTopics";
@@ -30,7 +30,7 @@ const MARKET_CHARTS: Omit<SearchItem, "group">[] = [
     title: "Live Prices",
     subtitle: "Markets · TradingView mini charts",
     href: "/markets#chart-live",
-    keywords: ["live", "ticker", "quotes", "real time", "tradingview", "etf"],
+    keywords: ["live", "ticker", "quotes", "real time", "tradingview", "etf", "bitcoin", "btc", "crypto"],
   },
   {
     id: "chart-performance",
@@ -48,7 +48,7 @@ const MARKET_CHARTS: Omit<SearchItem, "group">[] = [
   },
 ];
 
-const ASSET_KEYWORDS: Record<(typeof ASSETS)[number]["key"], string[]> = {
+const ASSET_KEYWORDS: Record<Asset["key"], string[]> = {
   nasdaq: ["nasdaq", "ixic", "tech stocks", "oneq", "qqq", "stocks"],
   sp500: ["s&p", "s&p 500", "sp500", "spx", "spy", "stocks"],
   dow: ["dow", "dow jones", "djia", "dia", "stocks"],
@@ -107,7 +107,7 @@ export function buildSearchIndex(upcoming: CalendarEvent[]): SearchItem[] {
       keywords: [...c.keywords, ...c.lines.flatMap((l) => (l.fredId ? [l.fredId.toLowerCase()] : []))],
     })),
     ...MARKET_CHARTS.map((c) => ({ ...c, group: "Charts" as const })),
-    ...ASSETS.map((a) => ({
+    ...FRED_ASSETS.map((a) => ({
       id: `stat-${a.key}`,
       group: "Charts" as const,
       title: a.name,

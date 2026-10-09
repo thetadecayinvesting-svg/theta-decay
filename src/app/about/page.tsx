@@ -48,7 +48,6 @@ const SOURCES = [
     href: "https://www.finra.org/rules-guidance/key-topics/margin-accounts/margin-statistics",
     what: "Monthly margin statistics",
   },
-  { name: "Coinbase (via FRED)", href: "https://fred.stlouisfed.org/series/CBBTCUSD", what: "Bitcoin prices" },
   { name: "TradingView", href: "https://www.tradingview.com/", what: "Live price widgets" },
 ];
 
@@ -71,7 +70,7 @@ const SECTIONS = [
   {
     href: "/markets",
     name: "Markets",
-    body: "Live prices plus long-term performance for the Nasdaq, S&P 500, Dow Jones and Bitcoin, and how stocks respond to Fed policy.",
+    body: "Live prices for stocks and Bitcoin, long-term performance for the Nasdaq, S&P 500 and Dow Jones, and how stocks respond to Fed policy.",
   },
   {
     href: "/newsletter",
@@ -159,7 +158,7 @@ function buildFaqs(events: CalendarEvent[]) {
     },
     {
       q: "Where does the data come from?",
-      a: "All economic data comes from official sources: FRED (Federal Reserve Bank of St. Louis), the Federal Reserve Board, the Bureau of Economic Analysis (BEA), the Bureau of Labor Statistics (BLS), the Institute for Supply Management (ISM), FINRA and Coinbase via FRED. Live prices are provided by TradingView. Each chart's Details panel lists its exact source and a suggested citation.",
+      a: "All economic data comes from official sources: FRED (Federal Reserve Bank of St. Louis), the Federal Reserve Board, the Bureau of Economic Analysis (BEA), the Bureau of Labor Statistics (BLS), the Institute for Supply Management (ISM) and FINRA. Live prices are provided by TradingView. Each chart's Details panel lists its exact source and a suggested citation.",
       href: "#data-sources",
     },
     {
