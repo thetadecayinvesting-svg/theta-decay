@@ -106,8 +106,8 @@ function ismEvents(): CalendarEvent[] {
     title: `ISM ${kind} PMI`,
     detail:
       kind === "Manufacturing"
-        ? "Purchasing Managers' Index for U.S. manufacturing; above 50 means expansion — ISM"
-        : "Purchasing Managers' Index for U.S. services; above 50 means expansion — ISM",
+        ? "Purchasing Managers' Index for U.S. manufacturing — ISM"
+        : "Purchasing Managers' Index for U.S. services — ISM",
     timeET: "10:00",
   }));
 }
