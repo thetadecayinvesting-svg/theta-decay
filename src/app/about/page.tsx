@@ -10,7 +10,7 @@ const MISSION =
 export const metadata: Metadata = pageMetadata({
   title: "About Us: Our Mission",
   description:
-    "Making economic data and Fed meetings accessible to every investor. Find the next FOMC meeting, jobs report, CPI, GDP and PCE release dates.",
+    "Theta Decay Investing makes Fed meetings and economic data easy to follow, with free calendars, live charts and plain-English guides for every investor.",
   path: "/about",
 });
 

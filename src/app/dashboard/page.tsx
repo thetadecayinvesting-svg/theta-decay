@@ -7,7 +7,7 @@ import { getDashboardData } from "@/lib/series";
 export const metadata: Metadata = pageMetadata({
   title: "Economic Indicators",
   description:
-    "Live charts of CPI inflation, unemployment, the fed funds rate, 10-year Treasury yield and real GDP growth, updated from FRED.",
+    "Free live charts of inflation, unemployment, interest rates, Treasury yields and what's driving GDP, updated hourly from official government data.",
   path: "/dashboard",
 });
 

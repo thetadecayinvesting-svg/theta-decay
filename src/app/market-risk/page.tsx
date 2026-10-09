@@ -7,7 +7,7 @@ import { getDashboardData } from "@/lib/series";
 export const metadata: Metadata = pageMetadata({
   title: "Market Risk",
   description:
-    "Track market stress: VIX volatility, high-yield and investment-grade credit spreads, the Baa corporate spread and FINRA margin debt.",
+    "Is the market getting nervous? Track the VIX \"fear gauge,\" credit spreads, margin debt, the dollar and factory surveys in one free dashboard.",
   path: "/market-risk",
 });
 

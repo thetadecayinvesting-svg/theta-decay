@@ -16,7 +16,7 @@ import { getLinesDetails, type LineConfig } from "@/lib/series";
 export const metadata: Metadata = pageMetadata({
   title: "Markets",
   description:
-    "Live Nasdaq, S&P 500, Dow Jones and Bitcoin prices, plus long-term performance and S&P 500 vs. fed funds rate charts.",
+    "Live Nasdaq, S&P 500, Dow Jones and Bitcoin prices, 10-year performance, and how stocks react when the Fed raises or cuts rates.",
   path: "/markets",
 });
 

@@ -30,7 +30,7 @@ export default function SiteHeader({ searchItems }: { searchItems: SearchItem[] 
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-surface">
+    <header data-nosnippet className="sticky top-0 z-30 border-b border-border bg-surface">
       <div className="mx-auto grid h-16 max-w-6xl grid-cols-[auto_1fr_auto] items-center gap-2 px-4 sm:px-6 md:grid-cols-[1fr_auto_1fr] md:gap-4">
         <div className="justify-self-start">
           <NavDrawer />

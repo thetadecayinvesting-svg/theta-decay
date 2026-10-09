@@ -77,7 +77,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">
             {children}
           </main>
-        <footer className="border-t border-border bg-surface">
+        <footer data-nosnippet className="border-t border-border bg-surface">
           <div className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted sm:px-6">
             Data: FRED®, Federal Reserve Bank of St. Louis; FINRA Margin
             Statistics; FOMC schedule from
