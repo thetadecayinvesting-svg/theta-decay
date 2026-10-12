@@ -213,7 +213,7 @@ export default function CalendarView({
                   <AddToCalendar event={event} />
                   <Link href={EVENT_GUIDES[event.type].href} className={ACTION_BUTTON}>
                     <BookIcon />
-                    Learn more
+                    Learn about {EVENT_META[event.type === "SEP" ? "FOMC" : event.type].label}
                   </Link>
                   {releasePageFor(event.type) && (
                     <Link href={releaseHref(releasePageFor(event.type)!.slug)} className={ACTION_BUTTON}>

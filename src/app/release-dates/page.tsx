@@ -35,7 +35,7 @@ export default async function ReleaseDatesIndex() {
         <h1 className="text-3xl font-semibold tracking-tight">Economic Data Release Dates {year()}</h1>
         <p className="mt-2 text-muted">
           Full release schedules for the reports that move markets, with the next date for each. For everything
-          coming up this week, see the <Link href="/" className="text-accent hover:text-accent-hover">calendar</Link>.
+          coming up this week, see the <Link href="/" className="text-accent underline underline-offset-2 hover:text-accent-hover">calendar</Link>.
         </p>
       </div>
 

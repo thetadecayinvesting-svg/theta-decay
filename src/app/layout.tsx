@@ -20,6 +20,7 @@ const inter = Inter({
 const sora = Sora({
   variable: "--font-sora",
   subsets: ["latin"],
+  preload: false, // only the body font is preloaded, so text appears sooner on slow phones
 });
 
 // Tables
@@ -27,6 +28,7 @@ const plexSans = IBM_Plex_Sans({
   variable: "--font-plex-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  preload: false,
 });
 
 export const metadata: Metadata = {

@@ -379,7 +379,7 @@ export default async function ReleaseDatesPage({ params }: PageProps<"/release-d
         <p className="text-xs text-muted">
           {fullYear ? `Dates from the ${page.publisher}.` : `Dates from the ${page.publisher}; new dates are added as they're published.`} See every
           report on the{" "}
-          <Link href="/" className="text-accent hover:text-accent-hover">economic calendar</Link>.
+          <Link href="/" className="text-accent underline underline-offset-2 hover:text-accent-hover">economic calendar</Link>.
         </p>
       </section>
 
