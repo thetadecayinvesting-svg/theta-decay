@@ -6,7 +6,7 @@ const BUTTON =
   "inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-surface-hover";
 
 // "Latest releases": the most recent Fed decision or data release — or all of
-// them, if several came out on the same day — summarized in plain English.
+// them, if several came out on the same day — summarized in a sentence or two.
 export default function LatestReleases({ releases }: { releases: LatestRelease[] }) {
   if (releases.length === 0) return null;
   const date = new Date(`${releases[0].date}T12:00:00Z`).toLocaleDateString("en-US", {

@@ -10,7 +10,7 @@ const MISSION =
 export const metadata: Metadata = pageMetadata({
   title: "About Us: Our Mission",
   description:
-    "Theta Decay Investing makes Fed meetings and economic data easy to follow, with free calendars, live charts and plain-English guides for every investor.",
+    "Theta Decay Investing makes Fed meetings and economic data easy to follow, with free calendars, live charts and guides for every investor.",
   path: "/about",
 });
 
@@ -233,7 +233,7 @@ export default async function AboutPage() {
             <h3 className="font-medium">Retail investors</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">
               Know what&apos;s coming and why it matters. A clear calendar of Fed meetings and
-              data releases, plain-English explanations of every indicator, and a free weekly
+              data releases, explanations of every indicator, and a free weekly
               newsletter, without the jargon or the paywall.
             </p>
           </div>

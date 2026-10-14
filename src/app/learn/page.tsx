@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/site";
 export const metadata: Metadata = pageMetadata({
   title: "Learn: Economic Indicators Explained",
   description:
-    "Plain-English guides to the economic data that moves markets: CPI, PCE, the jobs report, GDP, the fed funds rate, the VIX and the PMI.",
+    "Guides to the economic data that moves markets: CPI, PCE, the jobs report, GDP, the fed funds rate, the VIX and the PMI.",
   path: "/learn",
 });
 
@@ -16,7 +16,7 @@ export default function LearnPage() {
       <div className="max-w-2xl">
         <h1 className="text-3xl font-semibold tracking-tight">Learn</h1>
         <p className="mt-2 text-muted">
-          Plain-English guides to the economic reports and indicators that move markets: what each
+          Guides to the economic reports and indicators that move markets: what each
           one measures, why investors care, and when the next release is.
         </p>
       </div>

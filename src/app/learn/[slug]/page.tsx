@@ -139,7 +139,7 @@ export default async function LearnGuidePage({ params }: PageProps<"/learn/[slug
           source={`guide-${slug}`}
           variant="inline"
           heading="Get guides like this in your inbox"
-          blurb={`Plain-English explanations like this one, plus the week's market-moving dates${releasePage ? (releasePage.type === "FOMC" ? ", including every Fed meeting" : `, including every ${releasePage.name} release`) : ""}. One free email a week.`}
+          blurb={`Guides like this one, plus the week's market-moving dates${releasePage ? (releasePage.type === "FOMC" ? ", including every Fed meeting" : `, including every ${releasePage.name} release`) : ""}. One free email a week.`}
         />
       )}
 

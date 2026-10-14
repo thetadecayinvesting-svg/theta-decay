@@ -7,7 +7,7 @@ import { NEWSLETTER_NAME, pageMetadata } from "@/lib/site";
 export const metadata: Metadata = pageMetadata({
   title: "Newsletter",
   description:
-    `${NEWSLETTER_NAME}: a free, plain-English weekly briefing on the economic data and events that move markets.`,
+    `${NEWSLETTER_NAME}: a free weekly briefing on the economic data and events that move markets.`,
   path: "/newsletter",
 });
 
@@ -18,7 +18,7 @@ const WHATS_INSIDE = [
   },
   {
     title: "What the data says",
-    body: "The latest inflation, unemployment, rates and growth readings, explained in plain English.",
+    body: "The latest inflation, unemployment, rates and growth readings and what they mean.",
   },
   {
     title: "Risk check",

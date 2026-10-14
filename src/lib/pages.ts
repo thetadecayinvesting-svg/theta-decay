@@ -35,7 +35,7 @@ export const PAGES: SitePage[] = [
   {
     href: "/learn",
     label: "Learn",
-    description: "Plain-English guides to the indicators",
+    description: "Guides to the indicators",
     keywords: ["learn", "guides", "explained", "education", "what is", "beginner"],
   },
   {

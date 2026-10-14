@@ -80,7 +80,7 @@ export default function NewsletterSignup({
           <div className="md:w-2/5">
             <h2 className="font-semibold tracking-tight">{heading ?? `Get ${NEWSLETTER_NAME} in your inbox`}</h2>
             <p className="mt-1 text-sm text-muted">
-              {blurb ?? "The dates and data that move markets, in plain English."}{" "}
+              {blurb ?? "The dates and data that move markets, every week."}{" "}
               <Link href="/newsletter" className="text-accent underline underline-offset-2 hover:text-accent-hover">
                 About the newsletter
               </Link>
